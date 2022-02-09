@@ -1,0 +1,49 @@
+#include <string>
+#include <vector>
+#include <sstream>
+#include <cstring>
+#include <map>
+
+using namespace std;
+
+vector<string> solution(vector<string> record) {
+    vector<string> answer;
+    map<string, string> m;
+    
+    vector<string> A;
+    vector<string> B;
+    for(const string &s : record){
+        string action, id, name;
+        stringstream stream;
+        stream.str(s);
+        
+        stream>>action;
+        if(action=="Enter"){
+            stream>>id>>name;
+            m[id]=name;
+            A.push_back(id);
+            string tmp="";
+            tmp+="님이 들어왔습니다.";
+            B.push_back(tmp);
+        }
+        else if(action=="Leave"){
+            stream>>id;
+            A.push_back(id);
+            string tmp="";
+            tmp+="님이 나갔습니다.";
+            B.push_back(tmp);
+        }
+        else{
+            stream>>id>>name;
+            m[id]=name;
+        }
+    }
+    
+    for(unsigned int i=0; i<A.size();i++){
+        string C="";
+        C+=m[A[i]];
+        C+=B[i];
+        answer.push_back(C);
+    }
+    return answer;
+}
