@@ -1,0 +1,69 @@
+#include <string>
+#include <vector>
+#include <sstream>
+#include <cstring>
+#include <map>
+#include <set>
+#include <iostream>
+
+using namespace std;
+
+#define MAX 10000
+#define LAST_MINUTE 24*60-1
+
+bool chkOut[MAX]; //출차 여부 판단
+
+vector<int> solution(vector<int> fees, vector<string> records) {
+    vector<int> answer;
+    
+    map<int,int> m; //입차 시간
+    map<int,int> allTime; //누적 시간
+    map<int,int>::iterator i;
+        
+    for(const string &s : records){
+        string time, num, inOrOut;
+        
+        stringstream stream;
+        stream.str(s);
+        stream>>time>>num>>inOrOut;
+        
+        int hour, minute;
+        int number=stoi(num);
+        sscanf(time.c_str(), "%d:%d", &hour,&minute );
+        
+        if(inOrOut=="IN"){
+            chkOut[number]=false;
+            m[number]=hour*60+minute;
+        }
+        else{
+            chkOut[number]=true;
+            allTime[number]+=(hour*60+minute)-m[number];
+        }
+    }
+    
+    for(int i=0;i<=9999;i++){
+        if(chkOut[i]==false&&m.find(i)!=m.end()){
+            allTime[i]+=(LAST_MINUTE)-m[i];
+        }
+    }
+   
+    for(i=allTime.begin(); i!=allTime.end();i++){
+        int t=i->second;
+        int cost=fees[1];
+        if(t<=fees[0]){
+            answer.push_back(cost);
+        }
+        else{
+            t-=fees[0];
+            int div=t/fees[2];
+            double mod=t%fees[2];
+            if(mod==0)
+                cost+=div*fees[3];
+            else
+                cost+=(div+1)*fees[3];
+            answer.push_back(cost);
+        }
+    }
+    
+    return answer;
+}
