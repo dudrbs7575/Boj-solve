@@ -1,0 +1,70 @@
+#include <string>
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+vector<int> answer;
+int lion_shot[11];
+int apeach_shot[11];
+int ans;
+
+int get_point(){
+    int lion_point=0;
+    int apeach_point=0;
+    for(int i=0;i<=10;i++){
+        if(apeach_shot[i]==0&&lion_shot[i]==0)
+            continue;
+        if(apeach_shot[i]>=lion_shot[i])
+            apeach_point+=(10-i);
+        else
+            lion_point+=(10-i);
+    }
+    int gap_point=(lion_point-apeach_point);
+    return gap_point;
+}
+
+void dfs(int idx, int cnt, int n){
+    if(cnt==n){
+        int gap_point=get_point();
+        if(gap_point==ans&&gap_point!=0){
+            bool flag=false;
+            for(int i=10;i>=0;i--){
+                if(flag)
+                    return;
+                if(lion_shot[i]<answer[i])
+                    flag=true;
+                if(lion_shot[i]>answer[i])
+                    break;
+            }   
+            answer.clear();
+            for(int i=0;i<=10;i++){
+                answer.push_back(lion_shot[i]);
+            }    
+        }
+        if(gap_point>ans){
+            ans=gap_point;
+            answer.clear();
+            for(int i=0;i<=10;i++){
+                answer.push_back(lion_shot[i]);
+            }
+        }
+        return;
+    }
+    
+    for(int i=idx;i<=10;i++){
+        lion_shot[i]+=1;
+        dfs(i,cnt+1,n);
+        lion_shot[i]-=1;
+    }
+}
+
+vector<int> solution(int n, vector<int> info) {
+    for(int i=0;i<=10;i++){
+        apeach_shot[i]=info[i];
+    }
+    dfs(0,0,n);
+    if(ans==0)
+        answer.push_back(-1);
+    return answer;
+}
