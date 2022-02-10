@@ -1,0 +1,47 @@
+#include <string>
+#include <vector>
+#include <sstream>
+#include <iostream>
+#include <map>
+
+using namespace std;
+
+vector<int> solution(vector<string> id_list, vector<string> report, int k) {
+    vector<int> answer;
+    
+    map<string,int> reportedNumber;
+    map<string,vector<string>> reportInfo;
+    bool flag=false;
+    
+    for(const string &s : report){
+        string user, reportedUser;
+        stringstream stream;
+        stream.str(s);
+        stream>>user>>reportedUser;
+        
+        flag=false;
+        vector<string> tmp=reportInfo[user];
+        for(int i=0;i<tmp.size();i++){
+            if(tmp[i]==reportedUser){
+                flag=true;
+                break;
+            }
+        }
+        if(flag)
+            continue;
+        reportInfo[user].push_back(reportedUser);
+        reportedNumber[reportedUser]+=1;
+    }
+    
+    for(int i=0;i<id_list.size();i++){
+        int cnt=0;
+        vector<string> tmp=reportInfo[id_list[i]];
+        for(int j=0;j<tmp.size();j++){
+            if(reportedNumber[tmp[j]]>=k)
+                cnt++;
+        }
+        answer.push_back(cnt);
+    }
+    
+    return answer;
+}
