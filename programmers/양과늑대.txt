@@ -1,0 +1,55 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <queue>
+
+using namespace std;
+
+bool visit[132000];
+
+int solution(vector<int> info, vector<vector<int>> edges) {
+    int answer = 1;
+    vector<vector<int>> tree(info.size());
+    
+    for(auto a : edges){
+        tree[a[0]].push_back(a[1]);
+    }
+        
+    queue<pair<int,pair<int,int>>> qu;  //sheep, wolf, route
+    qu.push({1,{0,1<<0}});
+    visit[(1<<0)]=true;
+    
+    while(!qu.empty()){
+        int sheep=qu.front().first;
+        int wolf=qu.front().second.first;
+        int route=qu.front().second.second;
+        qu.pop();
+        
+        for(int i=0;i<info.size();i++){
+            
+            if( route & (1<<i) ){
+                for( auto nextNode : tree[i] ){
+                    int next_route = (route | (1<<nextNode) );
+                    if(info[nextNode]==0){
+                        if(visit[next_route])
+                            continue;
+                        answer=max(answer, sheep+1);
+                        visit[next_route]=true;
+                        qu.push({sheep+1,{wolf,next_route}});
+                    }
+                    else{
+                        if(sheep>wolf+1){
+                            if(visit[next_route])
+                                continue;
+                            visit[next_route]=true;
+                            qu.push({sheep,{wolf+1,next_route}});
+                        }
+                    }
+                }    
+            }
+            
+        }
+    }
+    
+    return answer;
+}
