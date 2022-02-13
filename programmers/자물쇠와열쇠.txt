@@ -1,0 +1,57 @@
+#include <string>
+#include <vector>
+#include <cstring>
+#include <iostream>
+
+using namespace std;
+ 
+int keySize,lockSize;
+
+void key_rotate(vector<vector<int>> &key){
+    vector<vector<int>> tmp(keySize, vector<int>(keySize));
+    for(int i=0;i<keySize;i++){
+        for(int j=0;j<keySize;j++){
+            tmp[i][j]=key[keySize-j-1][i];
+            cout<<tmp[i][j];
+        }
+        cout<<'\n';
+    }
+    cout<<'\n';
+    
+    
+    key=tmp;
+}
+
+bool key_insert(int x,int y, vector<vector<int>> &key, vector<vector<int>> &lock){
+    vector<vector<int>> tmp(lockSize, vector<int>(lockSize, 0));
+    for(int i=0;i<lockSize;i++){
+        for(int j=0;j<lockSize;j++){
+            tmp[i][j]=key[x][y]+lock[i][j];
+            if(tmp[i][j]==0)
+                return false;
+        }
+    }
+    return true;
+}
+
+bool solution(vector<vector<int>> key, vector<vector<int>> lock) {
+    bool answer = false;
+    keySize=key.size();
+    lockSize=lock.size();
+    
+    for(int r=0;r<4;r++){
+        
+        for(int i=0;i<lockSize;i++){
+            for(int j=0;j<lockSize;j++){
+                if(key_insert(i,j,key, lock)){
+                    answer=true;
+                    return answer;
+                }
+            }
+        }
+        
+        key_rotate(key);
+    }
+    
+    return answer;
+}
