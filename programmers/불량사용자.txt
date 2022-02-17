@@ -1,0 +1,56 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+bool chk[8];
+int baSize,usSize;
+set<string> s;
+
+
+void dfs(int idx, int cnt, string list ,vector<string> &user_id, vector<string> &banned_id){
+    if(cnt==baSize){
+        sort(list.begin(),list.end());
+        s.insert(list);
+        return;
+    }
+    
+    string bannedUser=banned_id[idx];
+    for(int i=0;i<usSize;i++){
+        string user = user_id[i];
+        
+        if(chk[i])
+            continue;
+        
+        if(user.size()!=bannedUser.size())
+            continue;
+        
+        bool flag=true;
+        for(int j=0;j<bannedUser.size();j++){
+            if(bannedUser[j]=='*'||bannedUser[j]==user[j])
+                continue;
+            else{
+                flag=false;
+                break;
+            }
+        }
+        
+        if(flag){
+            chk[i]=true;
+            dfs(idx+1,cnt+1,list+to_string(i),user_id,banned_id);
+            chk[i]=false;
+        }
+    } 
+}
+
+int solution(vector<string> user_id, vector<string> banned_id) {
+    int answer=0;
+    baSize=banned_id.size();
+    usSize=user_id.size();
+    dfs(0, 0, "",user_id, banned_id);    
+    answer=s.size();
+    return answer;
+}
