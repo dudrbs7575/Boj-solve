@@ -6,44 +6,63 @@
 using namespace std;
  
 int keySize,lockSize;
+vector<vector<int>> board;
 
 void key_rotate(vector<vector<int>> &key){
     vector<vector<int>> tmp(keySize, vector<int>(keySize));
     for(int i=0;i<keySize;i++){
         for(int j=0;j<keySize;j++){
             tmp[i][j]=key[keySize-j-1][i];
-            cout<<tmp[i][j];
         }
-        cout<<'\n';
     }
-    cout<<'\n';
-    
-    
     key=tmp;
 }
 
-bool key_insert(int x,int y, vector<vector<int>> &key, vector<vector<int>> &lock){
-    vector<vector<int>> tmp(lockSize, vector<int>(lockSize, 0));
-    for(int i=0;i<lockSize;i++){
-        for(int j=0;j<lockSize;j++){
-            tmp[i][j]=key[x][y]+lock[i][j];
-            if(tmp[i][j]==0)
-                return false;
+bool key_insert(int x,int y, vector<vector<int>> &key){
+    bool ans=true;
+    for(int i=x;i<x+keySize;i++){
+        for(int j=y;j<y+keySize;j++){
+            board[i][j]+=key[i-x][j-y];
         }
     }
-    return true;
+    
+    for(int i=keySize;i<keySize+lockSize;i++){
+        for(int j=keySize;j<keySize+lockSize;j++){
+            if(board[i][j]!=1){
+                ans=false;
+                break;
+            }
+        }
+        if(ans==false)
+            break;
+    }
+    
+    for(int i=x;i<x+keySize;i++){
+        for(int j=y;j<y+keySize;j++){
+            board[i][j]-=key[i-x][j-y];
+        }
+    }
+    
+    return ans;
 }
 
 bool solution(vector<vector<int>> key, vector<vector<int>> lock) {
     bool answer = false;
     keySize=key.size();
     lockSize=lock.size();
+    board = vector<vector<int>>(2*keySize+lockSize, vector<int>(2*keySize+lockSize));
+    
+    for(int i=keySize;i<keySize+lockSize;i++){
+        for(int j=keySize;j<keySize+lockSize;j++){
+            board[i][j]=lock[i-keySize][j-keySize];
+        }
+    }
     
     for(int r=0;r<4;r++){
         
-        for(int i=0;i<lockSize;i++){
-            for(int j=0;j<lockSize;j++){
-                if(key_insert(i,j,key, lock)){
+        for(int i=0;i<lockSize+keySize;i++){
+            for(int j=0;j<lockSize+keySize;j++){
+                if(key_insert(i,j,key)){
                     answer=true;
                     return answer;
                 }
