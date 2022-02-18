@@ -1,0 +1,71 @@
+#include <string>
+#include <vector>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+
+
+string solution(int n, int t, int m, vector<string> timetable) {
+    vector<int> alignTable;
+    vector<int> arriveTime;
+
+    for(const string &s : timetable){
+        int hour, minute;
+        sscanf(s.c_str(), "%d:%d",&hour,&minute);
+        alignTable.push_back(hour*60+minute);
+    }
+    sort(alignTable.begin(),alignTable.end());
+
+    int startTime=9*60;
+    for(int i=0;i<n;i++){
+        arriveTime.push_back(startTime+i*t);        
+    }
+
+    int ans=-1;
+    int idx=0;
+    int people=0;
+    int crewTime;
+    int busTime;
+    for(int i=0;i<alignTable.size();i++){
+        crewTime=alignTable[i];
+        busTime=arriveTime[idx];
+        
+        if(crewTime<=busTime){
+            people++;
+            if(people==m){
+                idx++;
+                if(idx==arriveTime.size()){
+                    ans=crewTime-1;
+                    break;
+                }
+                people=0;
+            }
+        }
+        else{
+            people=0;
+            idx++;
+            i--;
+            if(idx==arriveTime.size()){
+                ans=busTime;
+                break;
+            }
+        }
+    }
+
+    if(ans==-1){
+        if(people==0){
+            ans=crewTime-1;
+        }
+        else{
+            ans=busTime;
+        }
+    }
+
+    char answer[10];
+    sprintf(answer, "%02d:%02d",ans/60,ans%60);
+
+    return string(answer);
+}
