@@ -1,0 +1,56 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+#define MAX 201
+#define INF 100000000
+
+int dist[MAX][MAX];
+
+void init(int n, vector<vector<int>> &fares){
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(i==j){
+                dist[i][j]=0;
+                continue;
+            }
+            dist[i][j]=INF;
+        }
+    }
+    
+    int start,end,cost;
+    for(auto edge : fares){
+        start=edge[0]; end=edge[1]; cost=edge[2];
+        dist[start][end]=cost;
+        dist[end][start]=cost;
+    }
+}
+
+void floyd(int n){
+    for(int k=1;k<=n;k++){
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++)
+                dist[i][j]=min(dist[i][j],dist[i][k]+dist[k][j]);
+        }
+    }
+}
+
+int get_ans(int node,int s, int a, int b){
+    int tmp=dist[s][node]+dist[node][a]+dist[node][b];
+    return tmp;
+}
+
+int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
+    init(n,fares);
+    floyd(n);
+    int answer=dist[s][a]+dist[s][b];
+    
+    for(int i=1;i<=n;i++){
+        if(i==s)
+            continue;
+        answer=min(answer,get_ans(i,s,a,b));
+    }
+    
+    return answer;
+}
