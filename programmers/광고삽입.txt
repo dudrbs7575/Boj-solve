@@ -1,0 +1,56 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+long long log_chk[370000];
+long long log_cnt[370000];
+long long acc_sum[370000];
+
+string solution(string play_time, string adv_time, vector<string> logs) {
+    char answer[20];
+    
+    int hour,minute,second;
+    int advHour,advMinute,advSecond;
+    sscanf(play_time.c_str(),"%d:%d:%d",&hour,&minute,&second);
+    sscanf(adv_time.c_str(),"%d:%d:%d",&advHour,&advMinute,&advSecond);
+    int playTime=60*60*hour+60*minute+second;
+    int advTime=60*60*advHour+60*advMinute+advSecond;
+    
+    if(playTime==advTime)
+        return "00:00:00";
+    
+    int startHour,startMinute,startSecond;
+    int endHour,endMinute,endSecond;
+    for(const string &s : logs){
+        sscanf(s.c_str(),"%d:%d:%d-%d:%d:%d",&startHour,&startMinute,&startSecond,&endHour,&endMinute,&endSecond);
+        int startTime=60*60*startHour+60*startMinute+startSecond;
+        int endTime=60*60*endHour+60*endMinute+endSecond;
+        log_chk[startTime]++;
+        log_chk[endTime+1]--;
+    }
+   
+    log_cnt[0]=log_chk[0];
+    for(int i=1;i<=playTime;i++)
+        log_cnt[i]=log_chk[i]+log_cnt[i-1];
+    
+    acc_sum[0]=log_cnt[0];
+    for(int i=1;i<=playTime;i++)
+        acc_sum[i]=log_cnt[i]+acc_sum[i-1];
+    
+    long long tmp=acc_sum[advTime];
+    int ans=0;
+    for(int i=1;i<=playTime-advTime;i++){
+        long long prefixSum=acc_sum[i+advTime]-acc_sum[i-1];
+        if(tmp<prefixSum){
+            tmp=prefixSum;
+            ans=i;
+        }
+    }
+   
+    sprintf(answer,"%02d:%02d:%02d",ans/3600,(ans%3600)/60,ans%60);
+    
+    return string(answer);
+}
