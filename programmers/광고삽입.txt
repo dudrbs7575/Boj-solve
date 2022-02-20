@@ -29,7 +29,7 @@ string solution(string play_time, string adv_time, vector<string> logs) {
         int startTime=60*60*startHour+60*startMinute+startSecond;
         int endTime=60*60*endHour+60*endMinute+endSecond;
         log_chk[startTime]++;
-        log_chk[endTime+1]--;
+        log_chk[endTime]--;
     }
    
     log_cnt[0]=log_chk[0];
@@ -43,7 +43,7 @@ string solution(string play_time, string adv_time, vector<string> logs) {
     long long tmp=acc_sum[advTime];
     int ans=0;
     for(int i=1;i<=playTime-advTime;i++){
-        long long prefixSum=acc_sum[i+advTime]-acc_sum[i-1];
+        long long prefixSum=acc_sum[i+advTime-1]-acc_sum[i-1];
         if(tmp<prefixSum){
             tmp=prefixSum;
             ans=i;
