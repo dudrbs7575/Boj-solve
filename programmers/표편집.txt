@@ -1,0 +1,78 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <sstream>
+#include <stack>
+
+using namespace std;
+
+stack<int> restoreStack;
+char arr[1000001];
+int curRow;
+int endPoint;
+
+void up(string s){
+    char cmd;
+    int k;
+    stringstream stream;
+    stream.str(s);
+    stream>>cmd>>k;
+    
+    while(arr[curRow--]=='X'){}
+    curRow=curRow-k+1;
+}
+
+void down(string s){
+    char cmd;
+    int k;
+    stringstream stream;
+    stream.str(s);
+    stream>>cmd>>k;
+    
+    while(arr[curRow++]=='X'){}
+    curRow=curRow+k-1;    
+}
+
+void remove(string s){
+    arr[curRow]='X';
+    restoreStack.push(curRow);
+    if(curRow==endPoint){
+        while(arr[curRow--]=='X'){}
+        curRow++;
+        endPoint=curRow;
+    }
+    else{
+        while(arr[curRow++]=='X'){}
+        curRow--;
+    }
+}
+
+void restore(string s){
+    arr[restoreStack.top()]='O';
+    restoreStack.pop();
+}
+
+string solution(int n, int k, vector<string> cmd) {
+    string answer = "";
+    curRow=k;
+    endPoint=n-1;
+    for(const string &s : cmd){
+        if(s[0]=='U')
+            up(s);
+        else if(s[0]=='D')
+            down(s);
+        else if(s[0]=='C')
+            remove(s);
+        else
+            restore(s);
+    }
+    
+    for(int i=0;i<n;i++){
+        if(arr[i]=='X')
+            answer+='X';
+        else
+            answer+='O';
+    }
+    
+    return answer;
+}
