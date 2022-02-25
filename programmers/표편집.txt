@@ -6,95 +6,122 @@
 
 using namespace std;
 
-stack<int> restoreStack;
-char arr[1000001];
-int curRow;
-int endPoint;
+struct Node{
+    int idx;
+    struct Node *next;
+    struct Node *before;
+};
+
+bool chkRemove[1000001];
+stack<Node *> restoreStack;
+Node *head=nullptr;
+Node *tail=nullptr;
+Node *cur=nullptr;
+
+void makeNode(int n,int k){
+    for(int i=0;i<n;i++){
+        Node *newNode = new Node();
+        newNode->idx=i;
+        newNode->next=nullptr;
+        newNode->before=nullptr;
+        if(head==nullptr){
+            head=newNode;
+        }
+        else{
+            newNode->before=tail;
+            tail->next=newNode;
+        }
+        tail=newNode;
+        if(i==k)
+            cur=newNode;
+    }
+}
 
 void up(string s){
-    char cmd;
-    int k;
-    stringstream stream;
-    stream.str(s);
-    stream>>cmd>>k;
+    int x=0;
+    for(int i=2;i<s.length();i++){
+        x*=10;
+        x+=(s[i]-'0');
+    }
     
-    int cnt=0;
-    int idx=curRow-1;
-    while(1){
-        if(arr[idx]=='O')
-            cnt++;
-        if(cnt==k||idx==0){
-            curRow=idx;
-            break;
-        }
-        idx--;
+    while(x--){
+        cur=cur->before;
     }
 }
 
-void down(string s, int n){
-    char cmd;
-    int k;
-    stringstream stream;
-    stream.str(s);
-    stream>>cmd>>k;
+void down(string s){
+    int x=0;
+    for(int i=2;i<s.length();i++){
+        x*=10;
+        x+=(s[i]-'0');
+    }
     
-    int cnt=0;
-    int idx=curRow+1;
-    while(1){
-        if(arr[idx]=='O')
-            cnt++;
-        if(cnt==k||idx==n-1){
-            curRow=idx;
-            break;
-        }
-        idx++;
+    while(x--){
+        cur=cur->next;
     }
 }
 
-void remove(string s){
-    arr[curRow]='X';
-    restoreStack.push(curRow);
-    if(curRow==endPoint){
-        while(arr[--curRow]=='X'){}
-        endPoint=curRow;
+void remove(){
+    chkRemove[cur->idx]=true;
+    restoreStack.push(cur);
+    if(cur->next==nullptr){             //끝 idx remove 
+        (cur->before)->next=nullptr;
+        cur=cur->before; 
     }
     else{
-        while(arr[++curRow]=='X'){}
+        if(cur->before==nullptr){       //첫 idx remove
+            cur=cur->next;
+            cur->before=nullptr;
+            return;
+        }
+        (cur->before)->next=cur->next;  //나머지
+        (cur->next)->before=cur->before;
+        cur=cur->next;
     }
 }
 
-void restore(string s){
-    if(restoreStack.top()>endPoint)
-        endPoint=restoreStack.top();
-    arr[restoreStack.top()]='O';
+void restore(){
+    Node *restoreNode = restoreStack.top();
+    chkRemove[restoreNode->idx]=false;
     restoreStack.pop();
+    if(restoreNode->next==nullptr){                 //끝 idx 복구
+        (restoreNode->before)->next=restoreNode;
+    }
+    else{
+        if(restoreNode->before==nullptr){           //첫 idx 복구
+            (restoreNode->next)->before=restoreNode;
+            return;
+        }
+        restoreNode->next=(restoreNode->before)->next;  //나머지
+        restoreNode->before=(restoreNode->next)->before;
+        (restoreNode->before)->next=restoreNode;
+        (restoreNode->next)->before=restoreNode;
+    }
 }
 
 string solution(int n, int k, vector<string> cmd) {
     string answer = "";
-    curRow=k;
-    endPoint=n-1;
-    
-    for(int i=0;i<n;i++)
-        arr[i]='O';
-    
+    makeNode(n,k);
+ 
     for(const string &s : cmd){
-        if(s[0]=='U')
-            up(s);
-        else if(s[0]=='D')
-            down(s,n);
-        else if(s[0]=='C')
-            remove(s);
-        else
-            restore(s);
+        if(s[0]=='U'||s[0]=='D'){
+            if(s[0]=='U')
+                up(s);
+            else
+                down(s);
+        }
+        else if(s[0]=='C'){
+            remove();
+        }
+        else{
+            restore();
+        }
     }
-    
     for(int i=0;i<n;i++){
-        if(arr[i]=='X')
+        if(chkRemove[i]==true)
             answer+='X';
         else
             answer+='O';
     }
-    
     return answer;
 }
