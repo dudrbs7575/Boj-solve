@@ -1,0 +1,73 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+int answer=101;
+vector<bool> chk;
+vector<bool> restaurant;
+
+void chk_ans(vector<int> &weak, vector<int> &dist,int n){
+    for(int i=0;i<n;i++)
+        restaurant[i]=false;
+    
+    vector<int> v;
+    for(int i=0;i<chk.size();i++){
+        if(chk[i])
+            v.push_back(weak[i]);
+    }
+    
+    do{
+        for(int i=0;i<n;i++)
+            restaurant[i]=false;
+        bool flag=true;
+        int cnt=0;
+        for(int i=0;i<v.size();i++){
+            int d=dist[cnt++];
+            int w=v[i];
+            for(int j=0;j<=d;j++){
+                restaurant[(w+j)%n]=true;
+            }
+        }
+        
+        for(int i=0;i<weak.size();i++){
+            if(restaurant[weak[i]])
+                continue;
+            flag=false;
+        }
+        if(flag){
+            answer=min(answer,cnt);
+            return;
+        }
+    } while (next_permutation(v.begin(), v.end()));
+
+}
+
+void dfs(int idx, int cnt,vector<int> &weak,vector<int> &dist,int n){
+    if(cnt==0){
+        chk_ans(weak,dist,n);
+        return;
+    }
+    for(int i=idx;i<weak.size();i++){
+        chk[i]=true;
+        dfs(i+1,cnt-1,weak,dist,n);
+        chk[i]=false;
+    }
+}
+
+int solution(int n, vector<int> weak, vector<int> dist) {
+    sort( dist.begin(), dist.end(), greater<int>());
+    restaurant.resize(n,false);
+    
+    for(int i=1;i<=dist.size();i++){
+        chk.resize(weak.size(),false);
+        dfs(0,i,weak,dist,n);
+    }
+    
+    if(answer==101)
+        answer=-1;
+    return answer;
+}
