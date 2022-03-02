@@ -1,0 +1,44 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+int weak_len;
+int dist_len;
+
+int solution(int n, vector<int> weak, vector<int> dist) {
+    int answer=-1;
+    sort( dist.begin(), dist.end(), greater<int>());
+    weak_len=weak.size();
+    dist_len=dist.size();
+    
+    for(int i=0;i<weak_len;i++)
+        weak.push_back(n+weak[i]);
+    
+    for(int i=0;i<dist_len;i++){ //친구 수
+        for(int j=0;j<weak_len;j++){ //취약점 선택
+            vector<int> v;
+            for(int k=0;k<=i;k++)
+                v.push_back(dist[k]);
+            sort(v.begin(),v.end());
+            do{
+                int idx=0;
+                for(int k=0;k<=i;k++){
+                    int start=weak[j+idx]+v[k];
+                    while(weak[j+idx+1]<=start){
+                        idx++;
+                    }
+                    idx++;
+                }
+                if(idx>=weak_len){
+                    return i+1;
+                }
+            }while(next_permutation(v.begin(),v.end()));
+        }
+    }
+
+    return answer;
+}
