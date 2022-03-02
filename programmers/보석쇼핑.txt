@@ -1,0 +1,60 @@
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+vector<int> solution(vector<string> gems) {
+    vector<int> answer;
+    vector<int> gem;
+    map<string,int> m;
+    vector<int> chk;
+    
+    int cnt=0;                      //종류           
+    for(const string &s : gems){
+        if(m.find(s)!=m.end()){
+            gem.push_back(m[s]);
+            continue;
+        }
+        m[s]=cnt;
+        gem.push_back(cnt);
+        cnt++;
+    }
+    chk.resize(cnt,0);
+    
+    vector<pair<int,int>> start_end;
+    int start=0;
+    int end=0;
+    int variety=0;                  //현재 담은 보석 종류
+    for(int i=0;i<gem.size();i++){
+        end=i;
+        if(chk[gem[i]]==0)
+            variety++;
+        chk[gem[i]]++;
+        if(variety==cnt){
+            while(chk[gem[start]]-1>=1){
+                chk[gem[start]]--;
+                start++;
+            }
+            start_end.push_back({start,end});
+            chk.resize(cnt,0);
+            continue;
+        }
+    }
+    
+    int ansStart=-1;
+    int ansEnd=-1;
+    int gap=100001;
+    for(int i=0;i<start_end.size();i++){
+        if(gap>start_end[i].second-start_end[i].first){
+            ansStart=start_end[i].first;
+            ansEnd=start_end[i].second;
+            gap=start_end[i].second-start_end[i].first;
+        }
+    }
+    answer.push_back(ansStart+1);
+    answer.push_back(ansEnd+1);
+    return answer;
+}
