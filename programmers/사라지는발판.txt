@@ -1,0 +1,66 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+int dx[]={0,0,-1,1};
+int dy[]={-1,1,0,0};
+int N,M;
+
+bool chk_fail_condition( int x, int y, vector<vector<int>> &board){
+    for(int i=0;i<4;i++){
+        int nx=x+dx[i];
+        int ny=y+dy[i];
+        if(0<=nx&&nx<N&&0<=ny&&ny<M&&board[nx][ny])
+            return false;                           //이동 가능
+    }       
+    return true;                                    //이동 불가
+}
+
+bool trash(int x, int y,vector<vector<int>> &board){
+    if(0<=x&&x<N&&0<=y&&y<M&&board[x][y])
+        return false;                               //갈 수 있는 곳
+    return true;                                    //못 가는 곳
+}
+
+pair<bool,int> dfs(int myX,int myY, int opX, int opY, vector<vector<int>> &board){
+    if(chk_fail_condition(myX,myY,board))
+        return {false, 0};
+    if(myX==opX&&myY==opY)
+        return {true, 1};
+      //같은 칸 출발 시 A 1칸 이동 후 B바로 패배
+    
+    bool canWin=false;
+    int minTurn = 100;
+    int maxTurn = 0;
+    
+    for(int i=0;i<4;i++){
+        int nx=myX+dx[i];
+        int ny=myY+dy[i];
+        if(trash(nx,ny,board))
+            continue;
+        board[myX][myY]=0;
+        auto tmp = dfs(opX,opY,nx,ny,board);
+        board[myX][myY]=1;
+        
+        if(!tmp.first){
+            canWin=true;
+            minTurn = min(minTurn, tmp.second);
+        }
+        else if(!canWin){
+            maxTurn=max(maxTurn, tmp.second);
+        }
+    }
+    
+    int turn = canWin ? minTurn : maxTurn;       //내가 이기는 경우 최소한의 움직임, 내가 지는 경우 최대한의 움직임
+    return {canWin, turn+1};
+}
+
+int solution(vector<vector<int>> board, vector<int> aloc, vector<int> bloc) {
+    N=board.size();
+    M=board[0].size();
+    return dfs(aloc[0], aloc[1], bloc[0], bloc[1], board).second;
+}
