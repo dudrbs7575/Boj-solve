@@ -1,0 +1,52 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+string s;
+
+string convert(int n, int k) { // k진수로 변환
+    string ret = "";
+    
+    while(n) {
+        ret += to_string(n % k);
+        n /= k;
+    }
+    
+    return string(ret.rbegin(), ret.rend());
+}
+
+bool chk_prime(long long n){
+    if(n<2)
+        return false;
+    for(int i=2;i<=sqrt(n);i++){
+        if(n%i==0)
+            return false;
+    }
+    return true;
+}
+
+int solution(int n, int k) {
+    int answer = 0;
+    string num = convert(n,k);
+    string tmp="";
+    for(int i=0;i<num.length();i++){
+        if(num[i]=='0'&&tmp.length()!=0){
+            if(chk_prime(stoll(tmp))){
+                answer++;
+            }
+            tmp="";
+        }
+        else
+            tmp+=num[i];
+    }
+    
+    if(tmp.length()!=0){
+        if(chk_prime(stoll(tmp))){
+            answer++;
+        }
+    }
+    return answer;
+}
