@@ -1,0 +1,105 @@
+#include <bits/stdc++.h>
+
+// https://degurii.tistory.com/117
+
+using namespace std;
+
+set<int> se;
+vector<vector<pair<int,int>>> v;
+vector<int> card;
+
+int dx[]={0,0,-1,1};
+int dy[]={-1,1,0,0};
+
+bool chk_range(int x,int y){
+    return 0<=x&&x<4&&0<=y&&y<4;
+}
+
+int get_ans(vector<vector<int>> &board, int x, int y, int endX, int endY){
+    queue<pair<int,int>> qu;
+    vector<vector<bool>> visit=vector<vector<bool>>(4, vector<bool>(4,false));
+    
+    int dist=1;
+    qu.push({x,y});
+    visit[x][y]=true;
+    while(!qu.empty()){
+        int qsize=qu.size();
+        while(qsize--){
+            int curX=qu.front().first;
+            int curY=qu.front().second;
+            qu.pop();
+            if(curX==endX&&curY==endY){
+                return dist;
+            }
+            for(int i=0;i<4;i++){
+                int nx=curX+dx[i];
+                int ny=curY+dy[i];
+                if(!chk_range(nx,ny)||visit[nx][ny])
+                    continue;
+                visit[nx][ny]=true;
+                qu.push({nx,ny});
+                while(chk_range(nx,ny)&&board[nx][ny]==0){
+                    nx+=dx[i];
+                    ny+=dy[i];
+                }
+                if(!chk_range(nx,ny)){
+                    nx-=dx[i];
+                    ny-=dy[i];
+                }
+                if(visit[nx][ny]==false){
+                    visit[nx][ny]=true;
+                    qu.push({nx,ny});
+                }
+            }
+        }
+        dist++;
+    }
+    return dist;
+}
+
+int solve(vector<vector<int>> &board,int r, int c, int idx){
+    if(idx==card.size())
+        return 0;
+    
+    int x1=v[card[idx]][0].first;
+    int y1=v[card[idx]][0].second;
+    int x2=v[card[idx]][1].first;
+    int y2=v[card[idx]][1].second;
+    int route1=get_ans(board,r,c,x1,y1)+get_ans(board,x1,y1,x2,y2);
+    int route2=get_ans(board,r,c,x2,y2)+get_ans(board,x2,y2,x1,y1);
+    int ret=min(route1,route2);
+    board[x1][y1]=0;
+    board[x2][y2]=0;
+    if(route1<route2)
+        ret+=solve(board,x2,y2,idx+1);
+    else
+        ret+=solve(board,x1,y1,idx+1);
+        
+    return ret;
+}
+
+int solution(vector<vector<int>> board, int r, int c) {
+    int answer=1e9;
+    v.resize(10);
+    
+    for(int i=0;i<4;i++){
+        for(int j=0;j<4;j++){
+            if(board[i][j]){
+                v[board[i][j]].push_back({i,j});
+            }
+            if(board[i][j]&&se.find(board[i][j])==se.end()){
+                card.push_back(board[i][j]);
+                se.insert(board[i][j]);
+            }
+        }
+    }
+    sort(card.begin(), card.end());
+    
+    vector<vector<int>> tmp=board;
+    do{
+        board=tmp;
+        answer=min(answer,solve(board,r,c,0));
+    }while(next_permutation(card.begin(),card.end())); //뒤집을 카드 순서
+    
+    return answer;
+}
