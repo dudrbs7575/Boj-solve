@@ -17,11 +17,9 @@ bool chk_range(int x,int y){
 
 int get_ans(vector<vector<int>> &board, int x, int y, int endX, int endY){
     queue<pair<int,int>> qu;
-    vector<vector<bool>> visit=vector<vector<bool>>(4, vector<bool>(4,false));
-    
+
     int dist=1;
     qu.push({x,y});
-    visit[x][y]=true;
     while(!qu.empty()){
         int qsize=qu.size();
         while(qsize--){
@@ -34,9 +32,8 @@ int get_ans(vector<vector<int>> &board, int x, int y, int endX, int endY){
             for(int i=0;i<4;i++){
                 int nx=curX+dx[i];
                 int ny=curY+dy[i];
-                if(!chk_range(nx,ny)||visit[nx][ny])
+                if(!chk_range(nx,ny))
                     continue;
-                visit[nx][ny]=true;
                 qu.push({nx,ny});
                 while(chk_range(nx,ny)&&board[nx][ny]==0){
                     nx+=dx[i];
@@ -46,21 +43,18 @@ int get_ans(vector<vector<int>> &board, int x, int y, int endX, int endY){
                     nx-=dx[i];
                     ny-=dy[i];
                 }
-                if(visit[nx][ny]==false){
-                    visit[nx][ny]=true;
-                    qu.push({nx,ny});
-                }
+                qu.push({nx,ny});
             }
         }
         dist++;
     }
-    return dist;
+    return 0;
 }
 
 int solve(vector<vector<int>> &board,int r, int c, int idx){
     if(idx==card.size())
         return 0;
-    
+
     int x1=v[card[idx]][0].first;
     int y1=v[card[idx]][0].second;
     int x2=v[card[idx]][1].first;
@@ -74,14 +68,14 @@ int solve(vector<vector<int>> &board,int r, int c, int idx){
         ret+=solve(board,x2,y2,idx+1);
     else
         ret+=solve(board,x1,y1,idx+1);
-        
+
     return ret;
 }
 
 int solution(vector<vector<int>> board, int r, int c) {
     int answer=1e9;
     v.resize(10);
-    
+
     for(int i=0;i<4;i++){
         for(int j=0;j<4;j++){
             if(board[i][j]){
@@ -94,12 +88,12 @@ int solution(vector<vector<int>> board, int r, int c) {
         }
     }
     sort(card.begin(), card.end());
-    
+
     vector<vector<int>> tmp=board;
     do{
         board=tmp;
         answer=min(answer,solve(board,r,c,0));
     }while(next_permutation(card.begin(),card.end())); //뒤집을 카드 순서
-    
+
     return answer;
 }
