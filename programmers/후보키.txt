@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int row_len;
+int column_len;
+bool chk[8];
+vector<vector<int>> keyChk(300);
+int keyCnt=0;
+
+void get_ans(vector<vector<string>> &relation){
+    set<string> se;
+    for(int i=0;i<row_len;i++){
+        string tmp="";
+        for(int j=0;j<column_len;j++){
+            if(!chk[j])
+                continue;
+            tmp+=relation[i][j];
+        }
+        if(se.find(tmp)==se.end())
+            se.insert(tmp);
+        else
+            return;
+    }
+    for(int i=0;i<column_len;i++){
+        if(chk[i])
+            keyChk[keyCnt].push_back(i);    
+    }
+    keyCnt++;
+}
+
+void go(int n, int idx, int cnt, vector<vector<string>> &relation){
+    if(n==cnt){
+        for(int i=0;i<keyCnt;i++){
+            int count=0;
+            for(int j=0;j<keyChk[i].size();j++){
+                for(int k=0;k<column_len;k++){
+                    if(chk[k]&&keyChk[i][j]==k)
+                        count++;
+                }
+            }
+            if(count==keyChk[i].size())
+                return;
+        }
+        get_ans(relation);
+        return;
+    }
+    for(int i=idx;i<column_len;i++){
+        chk[i]=true;
+        go(n,i+1,cnt+1,relation);
+        chk[i]=false;
+    }
+}
+
+int solution(vector<vector<string>> relation) {
+    row_len=relation.size();
+    column_len=relation[0].size();
+    
+    for(int i=1;i<=column_len;i++){
+        memset(chk,false,sizeof(chk));
+        go(i,0,0,relation);
+    }
+    return keyCnt;
+}
