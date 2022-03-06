@@ -1,0 +1,88 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+vector<vector<int>> graph;
+vector<tuple<int,int,int>> tmp;             //y, x, node number
+vector<tuple<int,int,int>> node;            //x, node number, level
+vector<int> preorder;
+vector<int> postorder;
+
+void pre_traversing(int curNode){
+    if(curNode==0)
+        return;
+    preorder.push_back(curNode);
+    pre_traversing(graph[curNode][0]);
+    pre_traversing(graph[curNode][1]);
+}
+
+void post_traversing(int curNode){
+    if(curNode==0)
+        return;
+    post_traversing(graph[curNode][0]);
+    post_traversing(graph[curNode][1]);
+    postorder.push_back(curNode);
+}
+
+void traversing(int curNode){
+    if(!curNode)
+        return;
+
+    traversing(graph[curNode][0]);
+    cout<<curNode;
+    traversing(graph[curNode][1]);
+}
+
+vector<vector<int>> solution(vector<vector<int>> nodeinfo) {
+    vector<vector<int>> answer;
+    graph.resize(100005,vector<int>(2,0));
+    
+    for(int i=0;i<nodeinfo.size();i++){
+        tmp.push_back({nodeinfo[i][1],nodeinfo[i][0],i+1});
+    }
+    sort(tmp.begin(),tmp.end(),greater<tuple<int,int,int>>());  //y축 기준 정렬
+    
+    int level=0;
+    auto [a,b,c]=tmp[0];
+    node.push_back({b,c,level});      //root node
+    int rootNode=c;
+    for(int i=1;i<tmp.size();i++){
+        auto [a,b,c] = tmp[i];
+        auto [d,e,f] = tmp[i-1];
+        if(a!=d)
+            level++;
+        node.push_back({b,c,level});
+    }
+    
+    sort(node.begin(),node.end());  //x축 기준 정렬
+    
+    for(int i=0;i<node.size();i++){
+        auto [a,b,c]=node[i];
+        bool flag=false;
+        for(int j=i+1;j<node.size();j++){
+            auto [d,e,f]=node[j];
+            if(graph[e][0]!=0)
+                break;
+            if(c-1==f){
+                graph[e][0]=b;
+                flag=true;
+                break;
+            }
+        }
+        if(!flag){
+            for(int j=i-1;j>=0;j--){
+                auto [d,e,f]=node[j];
+                if(c-1==f){
+                    graph[e][1]=b;
+                    break;
+                }
+            }
+        }
+    }
+    
+    pre_traversing(rootNode);
+    post_traversing(rootNode);
+    answer.push_back(preorder);
+    answer.push_back(postorder);
+    return answer;
+}
