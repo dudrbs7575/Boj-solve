@@ -2,31 +2,47 @@
 
 using namespace std;
 
-vector<pair<int,int>> pageInfo;     //page당 기본점수, 외부 링크 수
-map<int,vector<int>> ma;            //현재 페이지를 참조하는 페이지 idx저장
+vector<pair<double,double>> pageInfo;     //page당 기본점수, 외부 링크 수
+map<string,vector<int>> ma;         //현재 페이지를 참조하는 페이지 idx저장
+map<string,vector<int>>::iterator it;
 bool wordChk[12];
-int point;
+double point;
 
-int get_link(string &page){
-    int cnt=0;
+void external_link(string &page, int n){
     int idx=0;
     while(true){
-        if(page.find("href",idx)==-1)
+        if(page.find("a href=",idx)==-1)
             break;
-        idx=page.find("href",idx);
+        idx=page.find("a href=",idx);
+        string tmp="";
+        for(int i=idx+8;page[i]!='"';i++){
+            tmp+=page[i];
+        }
+        ma[tmp].push_back(n);
+        idx++;
+    }
+}
+
+double get_link(string &page){
+    double cnt=0;
+    int idx=0;
+    while(true){
+        if(page.find("a href=",idx)==-1)
+            break;
+        idx=page.find("a href=",idx);
         idx++;
         cnt++;
     }
     return cnt;
 }
 
-int convert_and_find(string word, string &page){
+double convert_and_find(string word, string &page){
     for(int i=0;i<word.length();i++){
         if(wordChk[i]){
             word[i]=word[i]-'a'+'A';
         }
     }
-    int cnt=0;
+    double cnt=0;
     int idx=0;
     while(true){
         if(page.find(word,idx)==-1)
@@ -57,7 +73,7 @@ void dfs(int idx, int cnt, int n,string &word,string &page){
 void get_point(string &page, string &word){
     for(int i=0;i<word.length();i++)
         dfs(0,0,i+1,word,page);
-    int cnt=0;
+    double cnt=0;
     int idx=0;
     while(true){
         if(page.find(word,idx)==-1)
@@ -81,6 +97,15 @@ void convert_word(string &word){
     }
 }
 
+string get_url(string &page){
+    int idx=page.find("<meta property=\"og:url\" content=");
+    int startIdx=page.find("https://",idx);
+    string url="";
+    for(int i=startIdx;page[i]!='"';i++)
+        url+=page[i];
+    return url;
+}
+
 int solution(string word, vector<string> pages) {
     int answer = 0;
     convert_word(word);
@@ -88,12 +113,27 @@ int solution(string word, vector<string> pages) {
         string page=pages[i];
         point=0;
         get_point(page,word);
-        int link=get_link(page);
+        double link=get_link(page);
         pageInfo.push_back({point,link});
+        external_link(page,i);
     }
     
-    for(auto [a,b] : pageInfo){
-        cout<<a<<","<<b<<'\n';
+    vector<double> v;
+    for(auto [a,b] : pageInfo)
+        v.push_back(a);
+    
+    double n=-1;
+    for(int i=0;i<pages.size();i++){
+        string url=get_url(pages[i]);
+        double tmp=0;
+        for(int j=0;j<ma[url].size();j++){
+            tmp+=(pageInfo[ma[url][j]].first/pageInfo[ma[url][j]].second);
+        }
+        tmp+=v[i];
+        if(n<tmp){
+            n=tmp;
+            answer=i;
+        }
     }
     
     return answer;
