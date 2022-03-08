@@ -1,0 +1,117 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct Node{
+    string city;
+    struct Node * next;
+};
+
+Node * head = nullptr;
+Node * tail = nullptr;
+
+void make_node(string s){
+    Node * newNode = new Node();
+    newNode->city=s;
+    newNode->next=nullptr;
+    if(head==nullptr){
+        head=newNode;
+        tail=newNode;
+    }
+    else{
+        tail->next=newNode;
+        tail=newNode;
+    }
+    return;
+}
+
+bool chk_node(string s){
+    if(head==nullptr)
+        return false;
+    for(Node* curNode=head;curNode!=nullptr;curNode=curNode->next){
+        if(curNode->city==s)
+            return true;
+    }
+    return false;
+}
+
+void rearange_node(string s){
+    Node * newNode = new Node();
+    newNode->city=s;
+    newNode->next=nullptr;
+    head=head->next;
+    tail->next=newNode;
+    tail=newNode;
+}
+
+void change_node(string s){
+    if(tail->city==s)
+        return;
+    if(head->city==s){
+        tail->next=head;
+        tail=head;
+        head=head->next;
+        tail->next=nullptr;
+        return;
+    }
+    for(Node *curNode=head;curNode!=nullptr;curNode=curNode->next){
+        if((curNode->next)->city==s){
+            tail->next=curNode->next;
+            curNode->next=(curNode->next)->next;
+            tail=tail->next;
+            tail->next=nullptr;
+            break;
+        }
+    }
+}
+
+int solution(int cacheSize, vector<string> cities) {
+    int answer = 0;
+    int cache=0;
+    
+    for(string &s : cities){
+        for(int i=0;i<s.length();i++){
+            if('A'<=s[i]&&s[i]<='Z')
+                s[i]=s[i]-'A'+'a';
+        }
+    }
+    
+    if(cacheSize==0)
+        return 5*cities.size();
+    if(cacheSize==1){
+        int let=5;
+        for(int i=1;i<cities.size();i++){
+            if(cities[i]!=cities[i-1])
+                let+=5;
+            else
+                let+=1;
+        }
+        return let;
+    }
+    
+    for(const string &s : cities){
+        if(cache==cacheSize){
+            if(chk_node(s)){    //hit
+                change_node(s); //현재 도시를 node의 젤 끝으로
+                answer+=1;
+            }
+            else{                 //miss
+                rearange_node(s); //현재 도시를 node의 젤 끝으로, 처음 node 제거
+                answer+=5;
+            }
+        }
+        else{
+            if(chk_node(s)){    //hit
+                change_node(s); //현재 도시를 node의 젤 끝으로
+                answer+=1;
+            }
+            else{               //miss
+                make_node(s);   //현재 도시를 node의 젤 끝에 추가
+                cache++;
+                answer+=5;
+            }
+        }
+    }
+    
+    return answer;
+}
