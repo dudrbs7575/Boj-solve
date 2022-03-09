@@ -1,0 +1,71 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<string> solution(vector<string> files) {
+    vector<string> answer;
+    vector<tuple<string,int,int>> ret;
+    vector<tuple<string,string,string>> originfiles;
+    
+    for(int i=0;i<files.size();i++){
+        string s=files[i];
+        
+        int idx;
+        string head="";
+        for(int j=0;j<s.length();j++){
+            if('0'<=s[j]&&s[j]<='9'){
+                idx=j;
+                break;
+            }
+            head+=s[j];
+        }
+        
+        int iidx=-1;
+        string number="";
+        for(int j=idx;j<s.length();j++){
+            if(!('0'<=s[j]&&s[j]<='9')){
+                iidx=j;
+                break;
+            }
+            number+=s[j];
+        }
+        
+        string tmpNumber=number;
+        while(true){
+            if(tmpNumber[0]=='0')
+                tmpNumber.erase(tmpNumber.begin());
+            else
+                break;
+        }
+        
+        string tmpHead="";
+        for(int j=0;j<head.length();j++){
+            if('A'<=head[j]&&head[j]<='Z')
+                tmpHead+=(head[j]-'A'+'a');
+            else
+                tmpHead+=head[j];
+        }
+        ret.push_back({tmpHead,stoi(number),i});
+        
+        string tail="";
+        if(iidx!=-1){
+            for(int j=iidx;j<s.length();j++)
+                tail+=s[j];
+        }
+        originfiles.push_back({head,number,tail});
+    }
+    
+    sort(ret.begin(),ret.end());
+    
+    for(int i=0;i<ret.size();i++){
+        auto [a,b,c]=ret[i];
+        string ans="";
+        auto [d,e,f]=originfiles[c];
+        ans+=d;
+        ans+=e;
+        ans+=f;
+        answer.push_back(ans);
+    }
+    
+    return answer;
+}
