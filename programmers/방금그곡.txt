@@ -2,55 +2,67 @@
 
 using namespace std;
 
+map<string,char> ma;
+
+string convert(string s){
+    string convertString="";
+    for(int i=0;i<s.length();i++){
+        if(s[i+1]=='#'){
+            convertString+=ma[s.substr(i,2)];
+            i++;
+        }
+        else
+            convertString+=s[i];
+    }
+    return convertString;
+}
+
 string solution(string m, vector<string> musicinfos) {
-    string answer = "";
+    string answer = "(None)";
+    sort(musicinfos.begin(),musicinfos.end());
     int beforePlayTime=-1;
+    ma["C#"]='1';
+    ma["D#"]='2';
+    ma["F#"]='3';
+    ma["G#"]='4';
+    ma["A#"]='5';
+    
+    m = convert(m);
     
     for(const string &s : musicinfos){
-        char a[1600];
-        int h1,h2,m1,m2;
-        sscanf(s.c_str(), "%d:%d,%d:%d,%s",&h1,&m1,&h2,&m2, a);
+        int h1 = 0, h2 = 0, m1 = 0, m2 = 0, playTime = 0;
+        h1 = stoi(s.substr(0, 2)) * 60;
+        m1 = stoi(s.substr(3, 2));
+        h2 = stoi(s.substr(6, 2)) * 60;
+        m2 = stoi(s.substr(9, 2));
+        playTime = (h2 + m2) - (h1 + m1);
         string title="";
         string melody="";
-        int idx = string(a).find(",");
-        for(int i=0;i<idx;i++){
-            title+=string(a)[i];                
+        for(int i = 12; s.size(); i++)
+        {
+            if(s[i] == ',')
+            {
+                title = s.substr(12, i - 12);
+                melody = s.substr(i + 1);
+                break;
+            }
         }
-        for(int i=idx+1;i<string(a).length();i++){
-            melody+=string(a)[i];
-        }   
         
-        int playTime=60*h2+m2-(60*h1+m1);
-        int melody_len=melody.length();
-        int shapCnt=0;
-        for(int i=0;i<melody_len;i++){
-            if(melody[i]=='#')
-                shapCnt++;
-        }
-        melody_len-=shapCnt;
-        
-        if(playTime<melody_len){
-            int gap=melody_len-playTime;
-            while(gap--){
-                if(melody[melody.length()-1]=='#')
-                    gap++;
-                melody.erase(melody.end()-1);
+        melody=convert(melody);
+        if(melody.length()<playTime){
+            string tmp=melody;
+            for(int i=1;i<playTime/tmp.length();i++){
+                melody+=tmp;
+            }
+            for(int i=0;i<playTime%tmp.length();i++){
+                melody+=tmp[i];
             }
         }
         else{
-            int cnt=0;
-            melody_len+=shapCnt;
-            for(int i=0;i<playTime-melody_len;i++){
-                melody+=melody[cnt%melody_len];
-                if(melody[cnt%melody_len]=='#')
-                    i--;
-                cnt++;
-            }
+            melody=melody.substr(0, playTime);
         }
-        int iidx=melody.find(m);
-        if(iidx!=-1){
-            if(melody[iidx+m.length()]=='#')
-                continue;
+        
+        if(melody.find(m)!=-1){
             if(beforePlayTime<playTime){
                 beforePlayTime=playTime;
                 answer=title;
