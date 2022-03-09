@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int> solution(string msg) {
+    vector<int> answer;
+    map<string,int> ma;
+    char start = 'A';
+    string tmp = "";
+    for(int i=1;i<=26;i++){
+        tmp+=start;
+        ma[tmp]=i;
+        start+=1;
+        tmp.clear();
+    }
+    
+    int dic=27;
+    int msg_len=msg.length();
+    string s="";
+    for(int i=0;i<msg_len;i++){
+        for(int j=msg_len-i;j>=1;j--){
+            s=msg.substr(i,j);
+            if(ma.find(s)==ma.end())
+                continue;
+            answer.push_back(ma[s]);
+            if(i+j>=msg_len)
+                return answer;
+            ma[msg.substr(i,j+1)]=dic;
+            cout<<msg.substr(i,j+1);
+            dic++;
+            i+=(j-1);
+            break;
+        }
+    }
+    return answer;
+}
