@@ -1,0 +1,47 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+string convertNumber(int n, int k){
+    string ret="";
+    
+    if(k==10)
+        return to_string(n);
+    else if(2<=k&&k<=9){
+        while(n){
+            ret+=to_string(n%k);
+            n/=k;
+        }
+        return string(ret.rbegin(),ret.rend());
+    }
+    else{
+        while(n){
+            int x = n%k;
+            if(0<=x&&x<=9)
+                ret+=to_string(x);
+            else{
+                ret+=('A'+x-10);
+            }
+            n/=k;
+        }
+        return string(ret.rbegin(),ret.rend());
+    }
+}
+
+
+string solution(int n, int t, int m, int p) {
+    string answer = "";
+    
+    string ret="0";
+    for(int i=1;i<n*t*m;i++){
+        ret+=convertNumber(i,n);
+    }
+    
+    int idx=p-1;
+    while(t--){
+        answer.push_back(ret[idx]);
+        idx+=m;
+    }
+    
+    return answer;
+}
