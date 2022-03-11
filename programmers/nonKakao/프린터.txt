@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+stack<int> st;
+priority_queue<int> pq;
+queue<pair<int,int>> qu;
+
+int solution(vector<int> priorities, int location) {
+    int answer =0;
+    for(int i=0;i<priorities.size();i++){
+        qu.push({priorities[i],i});
+        pq.push(priorities[i]);
+    }
+    
+    while(true){
+        auto [a, b]=qu.front();
+        qu.pop();
+        if(a==pq.top()){
+            pq.pop();
+            answer++;
+            if(b==location){
+                break;
+            }
+        }
+        else{
+            qu.push({a,b});
+        }
+    }
+    
+    return answer;
+}
