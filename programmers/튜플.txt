@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<vector<int>> v;
+vector<pair<int,int>> v2; //size, idx
+
+vector<int> solution(string s) {
+    vector<int> answer;
+    v.resize(510);
+    s.erase(s.begin());
+    s.erase(s.end()-1);
+    
+    string tmp="";
+    vector<int> subV;
+    for(int i=0;i<s.length();i++){
+        if(s[i]=='}'){
+            subV.push_back(stoi(tmp));
+            v[subV.size()]=subV;
+            subV.clear();
+            tmp.clear();
+            continue;
+        }
+        if(s[i]=='{'||s[i]==','&&s[i-1]=='}')
+            continue;
+        if('0'<=s[i]&&s[i]<='9'){
+            tmp+=s[i];
+            continue;
+        }
+        if((s[i]==','&&('0'<=s[i-1]&&s[i-1]<='9'))){
+            subV.push_back(stoi(tmp));
+            tmp.clear();
+        }
+    }
+
+    for(int i=1;i<=505;i++){
+        for(int j=0;j<v[i].size();j++){
+            bool flag=false;
+            for(int k=0;k<answer.size();k++){
+                if(v[i][j]==answer[k])
+                    flag=true;
+            }
+            if(!flag){
+                answer.push_back(v[i][j]);
+            }
+        }
+    }
+    
+    return answer;
+}
