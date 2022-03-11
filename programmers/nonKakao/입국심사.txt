@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+long long answer=0;
+
+void binary_search(long long start, long long end, vector<int> &times, int n){
+    if(start>end)
+        return;
+    long long mid=(start+end)/2;
+    long long cnt=0;
+    for(auto a : times)
+        cnt+=(mid/a);
+   
+    if(cnt>=n){
+        answer=mid;
+        binary_search(start,mid-1,times,n);
+        return;
+    }
+    else{
+        binary_search(mid+1,end,times,n);
+        return;
+    }
+}
+
+long long solution(int n, vector<int> times) {
+    sort(times.begin(),times.end());
+    
+    long long start=1;
+    long long end=(long long)times[times.size()-1]*(long long)n;
+    binary_search(start,end,times,n);
+    
+    return answer;
+}
