@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int answer;
+bool visited[201];
+bool chk[201];
+int N;
+
+void bfs(int curNode, vector<vector<int>> &computers){
+    queue<int> qu;
+    qu.push(curNode);
+    visited[curNode]=true;
+    chk[curNode]=true;
+    while(!qu.empty()){
+        int node=qu.front();
+        qu.pop();
+        for(int i=0;i<N;i++){
+            if(computers[node][i]==0||visited[i]||i==node)
+                continue;
+            qu.push(i);
+            visited[i]=true;
+            chk[i]=true;
+        }
+    }
+    answer++;
+}
+
+int solution(int n, vector<vector<int>> computers) {
+    N=computers.size();
+    for(int i=0;i<N;i++){
+        if(chk[i])
+            continue;
+        bool flag=false;
+        for(int j=0;j<N;j++){
+            if(computers[i][j]==1)
+                flag=true;
+        }
+        if(!flag)
+            continue;
+        bfs(i,computers);
+        memset(visited,false,sizeof(visited));
+    }
+    return answer;
+}
