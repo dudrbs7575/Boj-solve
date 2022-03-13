@@ -1,0 +1,35 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int> remainProgresses;
+
+vector<int> solution(vector<int> progresses, vector<int> speeds) {
+    vector<int> answer;
+    for(auto a : progresses)
+        remainProgresses.push_back(100-a);
+    int len=remainProgresses.size();
+    int idx=0;
+    while(true){
+        if(idx==len)
+            break;
+        for(int i=idx;i<len;i++)
+            remainProgresses[i]-=speeds[i];
+        
+        if(remainProgresses[idx]>0)
+            continue;
+        
+        int cnt=0;
+        for(int i=idx;i<len;i++){
+            if(remainProgresses[i]>0)
+                break;
+            else{
+                cnt++;
+            }
+        }
+        idx+=cnt;
+        answer.push_back(cnt);
+    }
+    
+    return answer;
+}
