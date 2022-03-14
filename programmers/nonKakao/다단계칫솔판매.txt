@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+map<string, int> ma;
+vector<vector<int>> graph;
+vector<int> startNode;
+int accPrice[10001];
+
+void nameToNode(vector<string> &enroll, vector<string> &seller, vector<int> &amount){
+    int cnt=0;
+    ma["minho"]=cnt;
+    cnt++;
+    for(const string &s : enroll){
+        ma[s]=cnt;
+        cnt++;
+    }
+}
+
+void makeTree(vector<string> &enroll, vector<string> &referral){
+    for(int i=0;i<enroll.size();i++){
+        int parent=ma[referral[i]];
+        int child=ma[enroll[i]];
+        if(referral[i]=="-")
+            graph[child].push_back(0);
+        else
+            graph[child].push_back(parent);
+    }
+}
+
+void dfs(int curNode, int amount){
+    if(graph[curNode].size()==0)
+        return;
+    int nextPrice=amount/10;
+    int curPrice;
+    if(nextPrice==0){
+        curPrice=amount;
+        accPrice[curNode]+=amount;
+        return;
+    }
+    curPrice=amount-nextPrice;
+    accPrice[curNode]+=curPrice;
+    dfs(graph[curNode][0],nextPrice);
+}
+
+void get_ans(vector<string> &seller, vector<int> &amount){
+    for(int i=0;i<seller.size();i++){
+        int node=ma[seller[i]];
+        int price=amount[i];
+        dfs(node,price*100);
+    }
+}
+
+vector<int> solution(vector<string> enroll, vector<string> referral, vector<string> seller, vector<int> amount) {
+    vector<int> answer;
+    nameToNode(enroll,seller,amount);
+    graph.resize(enroll.size()+1);
+    makeTree(enroll,referral);
+    get_ans(seller,amount);
+    
+    for(int i=1;i<=enroll.size();i++)
+        answer.push_back(accPrice[i]);
+    return answer;
+}
