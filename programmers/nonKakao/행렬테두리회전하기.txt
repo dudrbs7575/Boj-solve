@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int board[101][101];
+int N,M;
+
+void init(int rows, int columns){
+    int k=1;
+    for(int i=1;i<=rows;i++){
+        for(int j=1;j<=columns;j++){
+            board[i][j]=k++;
+        }
+    }
+}
+
+int get_ans(int x1, int y1, int x2, int y2){
+    vector<pair<int,int>> tmp;
+    vector<int> tmp2;
+    for(int i=y1;i<=y2;i++) 
+        tmp.push_back({x1,i});
+    for(int i=x1+1;i<=x2;i++)
+        tmp.push_back({i,y2});
+    for(int i=y2-1;i>=y1;i--)
+        tmp.push_back({x2,i});
+    for(int i=x2-1;i>=x1+1;i--)
+        tmp.push_back({i,y1});
+    
+    tmp2.push_back(board[x1+1][y1]);
+    
+    for(int i=y1;i<=y2;i++)
+        tmp2.push_back(board[x1][i]);
+    for(int i=x1+1;i<=x2;i++)
+        tmp2.push_back(board[i][y2]);
+    for(int i=y2-1;i>=y1;i--)
+        tmp2.push_back(board[x2][i]);
+    for(int i=x2-1;i>=x1+2;i--)
+        tmp2.push_back(board[i][y1]);
+    
+    int let=1e9;
+    for(int i=0;i<tmp.size();i++){
+        auto [a,b]=tmp[i];
+        board[a][b]=tmp2[i];
+        let=min(let,tmp2[i]);
+    }
+    return let;
+}
+
+vector<int> solution(int rows, int columns, vector<vector<int>> queries) {
+    vector<int> answer;
+    N=rows;
+    M=columns;
+    init(rows, columns);
+    for(auto a : queries){
+        answer.push_back(get_ans(a[0],a[1],a[2],a[3]));
+        cout<<'\n';
+    }
+    return answer;
+}
