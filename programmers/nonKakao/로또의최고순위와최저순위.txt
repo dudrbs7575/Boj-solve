@@ -1,0 +1,30 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int> solution(vector<int> lottos, vector<int> win_nums) {
+    vector<int> answer;
+    
+    int zeroCnt=0;
+    int correctNum=0;
+    for(auto a : lottos){
+        if(a==0)
+            zeroCnt++;
+        else{
+            for(auto b : win_nums){
+                if(a==b)
+                    correctNum++;
+            }
+        }
+    }
+    
+    int best = 7-(correctNum+zeroCnt);
+    if(best>=6)
+        best=6;
+    int worst = 7-correctNum;
+    if(worst>=6)
+        worst=6;
+    answer.push_back(best);
+    answer.push_back(worst);
+    return answer;
+}
