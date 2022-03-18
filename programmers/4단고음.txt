@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int answer=0;
+
+void get_ans(string &melody){
+    int idx;
+    while(true){
+        idx=melody.find("*++");
+        if(idx==-1)
+            break;
+        melody.erase(idx,3);
+    }
+    if(melody.length()==0)
+        answer++;
+}
+
+void dfs(long long cnt, long long n, string melody){
+    if(cnt>n)
+        return;
+    if(melody.length()>=30)
+        return;
+    if(cnt==n){
+        get_ans(melody);
+        return;
+    }
+    melody+="+";
+    dfs(cnt+1,n,melody);
+    melody.erase(melody.end()-1);
+    melody+="*";
+    dfs(cnt*3,n,melody);
+    melody.erase(melody.end()-1);
+}
+
+// 전역 변수를 정의할 경우 함수 내에 초기화 코드를 꼭 작성해주세요.
+int solution(int n) {
+    dfs(1,(long long)n,"");
+    return answer;
+}
