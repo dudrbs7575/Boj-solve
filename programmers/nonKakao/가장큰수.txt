@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<pair<string,int>> v;
+
+string solution(vector<int> numbers) {
+    string answer = "";
+    for(auto n : numbers){
+        string s=to_string(n);
+        if(s.length()==1){
+            int t=3;
+            while(t--){
+                s+=s[0];
+            }
+            v.push_back({s,1});
+        }
+        else if(s.length()==2){
+            s+=s;
+            v.push_back({s,2});
+        }
+        else if(s.length()==3){
+            s+=s[0];
+            v.push_back({s,3});
+        }
+        else
+            v.push_back({s,4});
+    }    
+    sort(v.begin(),v.end(),greater<pair<string,int>>());
+    
+    for(auto [a,b]: v)
+        answer+=a.substr(0,b);
+    
+    if(answer[0]=='0')
+        return "0";
+    
+    return answer;
+}
