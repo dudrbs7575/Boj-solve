@@ -1,0 +1,83 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<char> v;
+vector<vector<bool>> visited;
+map<char,vector<pair<int,int>>> ma; 
+int r;
+int c;
+bool flag=false;
+int dx[]={0,0,-1,1};
+int dy[]={-1,1,0,0};
+
+bool isRange(int x, int y){
+    return 0<=x&&x<r&&0<=y&&y<c;
+}
+
+void dfs(int x, int y, int endX, int endY, int turn, int dir , char kakao, vector<string> &board){
+    if(turn>1)
+        return;
+    if(x==endX&&y==endY){
+        if(turn<=1)
+            flag=true;
+        return;
+    }
+    visited[x][y]=true;
+    int nx; int ny;
+    for(int i=0;i<4;i++){
+        nx=x+dx[i];
+        ny=y+dy[i];
+        if(!isRange(nx,ny)||visited[nx][ny]||board[nx][ny]=='*'||('A'<=board[x][y]&&board[x][y]<='Z'&&board[x][y]!=kakao))
+           continue;
+        if(i!=dir)
+            dfs(nx,ny,endX,endY,turn+1,i,kakao,board);
+        else
+            dfs(nx,ny,endX,endY,turn,i,kakao,board);
+    }
+}
+
+// 전역 변수를 정의할 경우 함수 내에 초기화 코드를 꼭 작성해주세요.
+string solution(int m, int n, vector<string> board) {
+    string answer = "";
+    r=m;c=n;
+    visited=vector<vector<bool>> (r,vector<bool>(c,false));
+    for(int i=0;i<r;i++){
+        for(int j=0;j<c;j++){
+            if('A'<=board[i][j]&&board[i][j]<='Z'&&ma.find(board[i][j])==ma.end()){
+                ma[board[i][j]].push_back({i,j});
+                v.push_back(board[i][j]);
+                continue;
+            }
+            if(ma.find(board[i][j])!=ma.end())
+                ma[board[i][j]].push_back({i,j});
+        }
+    }
+    
+    sort(v.begin(), v.end());
+    do{
+        int cnt=0;
+        vector<string> tmp = board;
+        for(int i=0;i<v.size();i++){
+            visited=vector<vector<bool>> (r,vector<bool>(c,false));
+            flag=false;
+            vector<pair<int,int>> mapV=ma[v[i]];
+            auto [a,b]=mapV[0];
+            auto [c,d]=mapV[1];
+            dfs(a,b,c,d,-1,-1,v[i],tmp);
+            if(!flag)
+                break;
+            tmp[a][b]='.';
+            tmp[c][d]='.';
+            cnt++;
+        }
+        if(cnt==v.size()){
+            for(auto a : v)
+                answer+=a;
+            return answer;
+        }
+            
+    }while(next_permutation(v.begin(),v.end()));
+    
+    return "IMPOSSIBLE";
+}
