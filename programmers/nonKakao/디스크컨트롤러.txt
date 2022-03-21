@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> jobQu;
+
+int solution(vector<vector<int>> jobs) {
+    int answer = 0;
+    
+    sort(jobs.begin(),jobs.end());
+    int curTime=0;
+    int task=0;
+    while(task<jobs.size()||!jobQu.empty()){
+        if(task<jobs.size()&&jobs[task][0]<=curTime){
+            jobQu.push({jobs[task][1],jobs[task][0]});
+            task++;
+            continue;
+        }
+        
+        if(!jobQu.empty()){
+            auto [a,b]=jobQu.top();
+            jobQu.pop();
+            curTime+=a;
+            answer+=curTime-b;
+        }
+        else{
+            curTime=jobs[task][0];
+        }
+    }
+    
+    return answer/jobs.size();
+}
