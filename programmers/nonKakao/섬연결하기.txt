@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define INF 1e9
+
+int parent[101];
+
+int getParent(int node){
+    if(parent[node]==node)
+        return node;
+    return parent[node]=getParent(parent[node]);
+}
+
+bool cmp(vector<int> a, vector<int> b){
+    return a[2]<b[2];
+}
+
+int solution(int n, vector<vector<int>> costs) {
+    int answer=0;
+    sort(costs.begin(),costs.end(),cmp);
+    for(int i=0;i<n;i++)
+        parent[i]=i;
+    
+    for(int i=0;i<costs.size();i++){
+        int start=getParent(costs[i][0]);
+        int end=getParent(costs[i][1]);
+        int cost=costs[i][2];
+        if(start!=end){ // 같을 시 싸이클이 존재
+            answer+=cost;
+            if(start<end)
+                parent[start]=end;
+            else
+                parent[end]=start;
+        }
+    }
+    
+    
+    return answer;
+}
