@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int answer=1e9;
+
+bool isConverted(string &s1, string &s2){
+    int cnt=0;
+    for(int i=0;i<s1.length();i++){
+        if(s1[i]==s2[i])
+            cnt++;
+    }
+    if(cnt==s1.length()-1)
+        return true;
+    return false;
+}
+
+void dfs(string &begin, string &target, vector<string> &words, vector<bool> chk,int cnt){
+    if(begin==target){
+        answer=min(answer,cnt);
+        return;
+    }
+    for(int i=0;i<words.size();i++){
+        if(chk[i])
+            continue;
+        if(isConverted(begin,words[i])){
+            chk[i]=true;
+            dfs(words[i],target,words,chk,cnt+1);
+            chk[i]=false;
+        }
+    }
+}
+
+int solution(string begin, string target, vector<string> words) {
+    vector<bool> chk=vector<bool>(51,false);
+    dfs(begin,target,words,chk,0);
+    if(answer==1e9)
+        return 0;
+    return answer;
+}
