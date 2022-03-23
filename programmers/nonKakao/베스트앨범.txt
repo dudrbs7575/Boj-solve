@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+map<string,vector<pair<int,int>>> ma;
+map<string,int> genrePlay;
+
+bool cmp(pair<string,int> &p, pair<string,int> &p2){
+    return p.second>p2.second;
+}
+
+bool cmp2(pair<int,int> &p, pair<int,int> &p2){
+    if(p.first==p2.first)
+        return p.second<p2.second;
+    return p.first>p2.first;
+}
+
+vector<int> solution(vector<string> genres, vector<int> plays) {
+    vector<int> answer;
+
+    for(int i=0;i<genres.size();i++){
+        string genre=genres[i];
+        int play=plays[i];
+        ma[genre].push_back({play,i});
+        genrePlay[genre]+=play;
+    }
+    
+    vector<pair<string,int>> v(genrePlay.begin(),genrePlay.end());
+    sort(v.begin(),v.end(),cmp);
+    
+    for(auto a : v){
+        vector<pair<int,int>> vv=ma[a.first];
+        sort(vv.begin(),vv.end(),cmp2);
+ 
+        if(vv.size()==1)
+            answer.push_back(vv[0].second);
+        else{
+            answer.push_back(vv[0].second);
+            answer.push_back(vv[1].second);
+        }
+    }
+    
+    
+    return answer;
+}
