@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+bool cmp(int &a, int &b){
+    return a>b;
+}
+
+priority_queue<pair<int,int>> frontPq;    //내림차순
+priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> backPq;    //오름차순
+
+vector<int> solution(vector<string> operations) {
+    vector<int> answer;
+    
+    bool emptyFlag=true;
+    for(int i=0;i<operations.size();i++){
+        if(operations[i][0]=='I'){
+            int val=stoi(operations[i].substr(2));
+            frontPq.push({val,i});
+            backPq.push({val,i});
+            emptyFlag=false;
+            continue;
+        }
+        if(emptyFlag)
+            continue;
+
+        if(operations[i][2]=='-'){
+            if(frontPq.top().first==backPq.top().first&&frontPq.top().second==backPq.top().second){
+                frontPq.pop();
+                backPq.pop();
+                emptyFlag=true;
+            }
+            backPq.pop();
+        }
+        else{
+            if(frontPq.top().first==backPq.top().first&&frontPq.top().second==backPq.top().second){
+                frontPq.pop();
+                backPq.pop();
+                emptyFlag=true;
+            }
+            frontPq.pop();
+        }
+    }
+    if(emptyFlag){
+        answer.push_back(0);
+        answer.push_back(0);
+    }
+    else{
+        answer.push_back(frontPq.top().first);
+        answer.push_back(backPq.top().first);
+    }
+    
+    return answer;
+}
