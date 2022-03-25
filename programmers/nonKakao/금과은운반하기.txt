@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+bool canAnswer(long long mid, int a, int b, vector<int> &g, vector<int> &s, vector<int> &w, vector<int> &t){
+    long long accGold=0;
+    long long accSilver=0;
+    long long accTotal=0;
+    for(int i=0;i<t.size();i++){
+        long long time = t[i];
+        long long roundTime=time*2;
+        long long moveCnt=mid/roundTime;
+        if(mid%roundTime>=time)
+            moveCnt++;
+        long long maxDeliever=w[i]*moveCnt;
+        
+        accGold += min((long long)g[i],maxDeliever);
+        accSilver+=min((long long)s[i],maxDeliever);
+        accTotal+=min((long long)g[i]+(long long)s[i],maxDeliever);
+    }
+    if(accGold>=a&&accSilver>=b&&accTotal>=a+b)
+        return true;
+    return false;
+}
+
+long long solution(int a, int b, vector<int> g, vector<int> s, vector<int> w, vector<int> t) {
+    long long answer = -1;
+    long long start=0;
+    long long end=10e15;
+    while(start<=end){
+        long long mid=(start+end)/2;
+        if(canAnswer(mid,a,b,g,s,w,t)){
+            answer=mid;
+            end=mid-1;
+        }
+        else{
+            start=mid+1;
+        }
+    }
+    return answer;
+}
