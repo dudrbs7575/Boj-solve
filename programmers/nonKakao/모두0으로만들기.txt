@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<vector<int>> tree;
+vector<long long> cost;
+long long answer=0;
+
+void dfs(int curNode, int parentNode){
+    for(int i=0;i<tree[curNode].size();i++){
+        int next=tree[curNode][i];
+        if(next==parentNode)
+            continue;
+        dfs(next,curNode);
+    }
+    if(curNode==parentNode)
+        return;
+    answer+=abs(cost[curNode]);
+    cost[parentNode]+=cost[curNode];
+    cost[curNode]=0;
+}
+
+long long solution(vector<int> a, vector<vector<int>> edges) {
+    tree.resize(a.size());
+    cost.resize(a.size());
+    
+    for(int i=0;i<a.size();i++)
+        cost[i]=(long long)a[i];
+    
+    for(auto e : edges){
+        tree[e[0]].push_back(e[1]);
+        tree[e[1]].push_back(e[0]);
+    }
+    
+    int startNode;
+    for(int i=0;i<a.size();i++){
+        if(tree[i].size()==1){
+            startNode=i;
+            dfs(i,i);
+            break;
+        }
+    }
+    
+    if(cost[startNode]==0)
+        return answer;
+    else
+        return -1;
+}
