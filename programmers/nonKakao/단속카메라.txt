@@ -1,0 +1,25 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int solution(vector<vector<int>> routes) {
+    int answer = 0;
+    vector<pair<int,int>> coordi;
+    for(auto r : routes)
+        coordi.push_back({r[0],r[1]});
+    sort(coordi.begin(),coordi.end());
+    
+    int prevEnd=-30001;
+    for(int i=0;i<coordi.size();i++){
+        int start=coordi[i].first;
+        int end=coordi[i].second;
+        if(prevEnd<start){
+            answer++;
+            prevEnd=end;
+            continue;
+        }
+        if(prevEnd>=end)
+            prevEnd=end;
+    }
+    return answer;
+}
