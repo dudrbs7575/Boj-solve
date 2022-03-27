@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int N,M;
+int dx[]={0,0,-1,1};
+int dy[]={-1,1,0,0};
+
+bool isRange(int x,int y){
+    return 0<=x&&x<N&&0<=y&&y<M;
+}
+
+int bfs(int startX, int startY, vector<vector<int>> &maps){
+    int let=1e9;
+    vector<vector<bool>> visited(N,vector<bool>(M,false));
+    visited[startX][startY]=true;
+    queue<pair<pair<int,int>,int>> qu;
+    qu.push({{startX,startY},1});
+    while(!qu.empty()){
+        int x=qu.front().first.first;
+        int y=qu.front().first.second;
+        int cost=qu.front().second;
+        qu.pop();
+        if(x==N-1&&y==M-1){
+            let=min(let,cost);
+            continue;
+        }
+        for(int i=0;i<4;i++){
+            int nx=x+dx[i];
+            int ny=y+dy[i];
+            if(!isRange(nx,ny)||visited[nx][ny]||maps[nx][ny]==0)
+                continue;
+            qu.push({{nx,ny},cost+1});
+            visited[nx][ny]=true;
+        }
+    }
+    if(let==1e9)
+        return -1;
+    else
+        return let;
+}
+
+int solution(vector<vector<int> > maps)
+{
+    N=maps.size();
+    M=maps[0].size();
+    return bfs(0,0,maps);
+}
