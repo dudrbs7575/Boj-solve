@@ -11,7 +11,6 @@ bool isRange(int x,int y){
 }
 
 int bfs(int startX, int startY, vector<vector<int>> &maps){
-    int let=1e9;
     vector<vector<bool>> visited(N,vector<bool>(M,false));
     visited[startX][startY]=true;
     queue<pair<pair<int,int>,int>> qu;
@@ -21,10 +20,8 @@ int bfs(int startX, int startY, vector<vector<int>> &maps){
         int y=qu.front().first.second;
         int cost=qu.front().second;
         qu.pop();
-        if(x==N-1&&y==M-1){
-            let=min(let,cost);
-            continue;
-        }
+        if(x==N-1&&y==M-1)
+            return cost;
         for(int i=0;i<4;i++){
             int nx=x+dx[i];
             int ny=y+dy[i];
@@ -34,10 +31,7 @@ int bfs(int startX, int startY, vector<vector<int>> &maps){
             visited[nx][ny]=true;
         }
     }
-    if(let==1e9)
-        return -1;
-    else
-        return let;
+    return -1;
 }
 
 int solution(vector<vector<int> > maps)
