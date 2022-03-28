@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+set<string> se;
+int outTurn[11];
+
+vector<int> solution(int n, vector<string> words) {
+    vector<int> answer;
+    memset(outTurn,0,sizeof(outTurn));
+    
+    int turn=1;
+    string prevWord="";
+    prevWord+=words[0][0];
+    for(const string &s : words){
+        if(turn==n+1)
+            turn=1;
+        if(se.find(s)!=se.end()||prevWord[prevWord.length()-1]!=s[0]){
+            answer.push_back(turn);
+            answer.push_back(outTurn[turn]+1);
+            break;
+        }
+        else{
+            prevWord=s;
+            se.insert(s);
+        }
+        outTurn[turn++]++;
+    }
+    
+    if(!answer.size()){
+        answer.push_back(0);
+        answer.push_back(0);
+    }
+    
+    return answer;
+}
