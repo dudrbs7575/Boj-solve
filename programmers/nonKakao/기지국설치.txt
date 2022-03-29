@@ -2,47 +2,19 @@
 
 using namespace std;
 
-bool chk[200000001];
-
 int solution(int n, vector<int> stations, int w)
 {
     int answer = 0;
-    for(int i=0;i<stations.size();i++){
-        int cur=stations[i];
-        chk[cur]=true;
-        for(int j=cur-1;j>=cur-w;j--){
-            if(j<0)
-                break;
-            chk[j]=true;
-        }
-        for(int j=cur+1;j<=cur+w;j++){
-            if(j>n)
-                break;
-            chk[j]=true;
-        }
-    }
-    
-    int cnt=0;
+    int stIdx=0;
     for(int i=1;i<=n;){
-        if(!chk[i]){
-            if(cnt==w){
-                answer++;
-                i+=(w+1);
-                cnt=0;
-                continue;
-            }
-            cnt++;
+        if(i>=stations[stIdx]-w&&i<=stations[stIdx]+w){
+            i=stations[stIdx]+w+1;
+            stIdx++;
         }
         else{
-            if(cnt!=0){
-                answer++;
-                cnt=0;
-            }
+            answer++;
+            i+=(2*w)+1;
         }
-        i++;
     }
-    if(cnt!=0)
-        answer++;
-    
     return answer;
 }
