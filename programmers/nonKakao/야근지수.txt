@@ -1,0 +1,73 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+bool cmp(long long a, long long b){
+    return a>b;
+}
+
+int find_endPoint(vector<long long> &work, long long m){
+    int cnt=-1;
+    for(int i=0;i<work.size();i++){
+        if(work[i]==m)
+            cnt++;
+        else
+            break;
+    }
+    return cnt;
+}
+
+long long get_ans(vector<long long> &work){
+    long long ans=0;
+    for(int i=0;i<work.size();i++){
+        if(work[i]<0)
+            return 0;
+        ans+=pow(work[i],2);
+    }
+    return ans;
+}
+
+long long solution(int n, vector<int> works) {
+    long long answer = 0;
+    long long len=works.size();
+    vector<long long> work;
+    for(int i=0;i<len;i++)
+        work.push_back((long long)works[i]);
+    sort(work.begin(),work.end(),cmp);
+    if(len==1){
+        if(work[0]-n<=0)
+            return 0;
+        else
+            return pow(work[0]-(long long)n,2);
+    }
+    
+    long long maxVal=work[0];
+    int cnt=0;
+    while(true){
+        int endPoint=find_endPoint(work,maxVal);
+        if(endPoint+1!=len){
+            long long nextVal=work[endPoint+1];
+            long long gap=maxVal-nextVal;
+            while(gap--){
+                for(int i=0;i<=endPoint;i++){
+                    work[i]--;
+                    cnt++;
+                    if(cnt==n){
+                        return get_ans(work);
+                    }
+                }
+            }
+            maxVal=nextVal;
+        }
+        else{
+            while(true){
+                for(int i=0;i<len;i++){
+                    work[i]--;
+                    cnt++;
+                    if(cnt==n)
+                        return get_ans(work);
+                }
+            }
+        }
+    }
+}
