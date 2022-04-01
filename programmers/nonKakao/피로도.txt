@@ -1,0 +1,25 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int answer=-1;
+
+void get_ans(int k, vector<vector<int>> &dungeons){
+    int cnt=0;
+    for(auto d : dungeons){
+        if(k>=d[0]){
+            k-=d[1];
+            cnt++;
+        }
+    }
+    answer=max(answer,cnt);
+}
+
+int solution(int k, vector<vector<int>> dungeons) {
+    sort(dungeons.begin(),dungeons.end());
+    do{
+        get_ans(k,dungeons);
+    }while(next_permutation(dungeons.begin(),dungeons.end()));
+    
+    return answer;
+}
