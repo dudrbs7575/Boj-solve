@@ -9,11 +9,13 @@
 
 using namespace std;
 
+#define ll long long
+#define pii pair<int,int>
 #define MAX 501
-#define INF 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
 
-vector<pair<pair<int, int>, int>> edge;
-int dist[MAX];
+vector<pair<pii,ll>> edge;
+ll dist[MAX];
 int N, M;
 
 void init() {
@@ -24,7 +26,8 @@ void init() {
 	for (int i = 1; i <= N; i++)
 		dist[i] = INF;
 
-	int start, end, cost;
+	int start, end;
+	ll cost;
 	for (int i = 0; i < M; i++) {
 		cin >> start >> end >> cost;
 		edge.push_back({ {start,end }, cost });
@@ -37,7 +40,7 @@ bool bellman_ford(int startNode) {
 		for (int j = 0; j < edge.size(); j++) {
 			int from = edge[j].first.first;
 			int to = edge[j].first.second;
-			int cost = edge[j].second;
+			ll cost = edge[j].second;
 
 			if (dist[from] == INF)
 				continue;
@@ -49,7 +52,7 @@ bool bellman_ford(int startNode) {
 	for (int i = 0; i < edge.size(); i++) {
 		int from = edge[i].first.first;
 		int to = edge[i].first.second;
-		int cost = edge[i].second;
+		ll cost = edge[i].second;
 
 		if (dist[from] == INF)
 			continue;
