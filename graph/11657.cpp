@@ -11,6 +11,7 @@ using namespace std;
 
 #define ll long long
 #define pii pair<int,int>
+#define vi vector<int>
 #define MAX 501
 #define INF 0x3f3f3f3f3f3f3f3f
 
