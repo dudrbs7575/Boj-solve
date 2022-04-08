@@ -15,7 +15,7 @@ using namespace std;
 #define MAX 501
 #define INF 0x3f3f3f3f3f3f3f3f
 
-vector<pair<pii,ll>> edge;
+vector<pair<pii, ll>> edge;
 ll dist[MAX];
 int N, M;
 
@@ -23,7 +23,7 @@ void init() {
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL);
 	cin >> N >> M;
-	
+
 	for (int i = 1; i <= N; i++)
 		dist[i] = INF;
 
@@ -80,7 +80,7 @@ void solve() {
 	return;
 }
 
-int main(){
+int main() {
 	init();
 	solve();
 	return 0;
