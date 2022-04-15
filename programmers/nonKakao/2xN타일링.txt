@@ -1,0 +1,29 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define MOD 1000000007
+#define MAX 60001
+
+int dp[MAX];
+
+int go(int cur, int N){
+    if(cur==N)
+        return 1;
+    if(cur>N)
+        return 0;
+    
+    int &ret=dp[cur];
+    if(ret!=-1)
+        return ret;
+    ret=0;
+    ret+=go(cur+1,N)%MOD+go(cur+2,N)%MOD;
+    return ret%MOD;
+}
+
+int solution(int n) {
+    int answer = 0;
+    memset(dp,-1,sizeof(dp));
+    answer=go(0,n);    
+    return answer;
+}
