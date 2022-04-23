@@ -18,7 +18,8 @@ using namespace std;
 using pii = pair<int, int>;
 using tiii = tuple<int, int, int>;
 using vi = vector<int>;
-using vii = vector<vector<int>>;
+using vvi = vector<vector<int>>;
+using vii = vector<pair<int, int>>;
 
 int board[MAX][MAX];
 bool visited[MAX][MAX];
@@ -45,9 +46,10 @@ bool is_range(int x,int y) {
 	return 0 <= x && x < N && 0 <= y && y < N;
 }
 
-int bfs(int sx, int sy) {
+pii bfs(int sx, int sy) {
 	int blockColor = board[sx][sy];
 	int rainbowBlock = 0;
+	vii rainbowStore;
 	int cnt = 1;
 	queue<pii> qu;
 	visited[sx][sy] = true;
@@ -61,36 +63,58 @@ int bfs(int sx, int sy) {
 			int ny = y + dy[i];
 			if (!is_range(nx, ny)||visited[nx][ny])
 				continue;
-			if (board[nx][ny] != blockColor && board[nx][ny] != 0)
+			if (!(board[nx][ny] == blockColor || board[nx][ny] == 0))
 				continue;
+			if (board[nx][ny] == 0) {
+				rainbowStore.push_back({ nx,ny });
+				rainbowBlock++;
+			}
 			qu.push({ nx,ny });
 			visited[nx][ny] = true;
 			cnt++;
 		}
 	}
-	return cnt;
+	for (int i = 0; i < rainbowStore.size(); i++) 
+		visited[rainbowStore[i].first][rainbowStore[i].second] = false;
+	
+	
+	if (cnt == 1)
+		return { -1,-1 };
+	return {cnt,rainbowBlock};
 }
 
 pii find_block() {
-	int maxCnt = -1;
-	int standardX;
-	int standardY;
+	memset(visited, false, sizeof(visited));
+	int maxCnt = 0;
+	int rainbowCnt = 0;
+	int standardX = -1;
+	int standardY = -1;
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
-			if (!visited[i][j]) {
-				int cnt = bfs(i, j);
-				if (maxCnt < cnt) {
-					maxCnt = cnt;
+			if (!visited[i][j]&&board[i][j]>=1) {
+				pii c = bfs(i, j);
+				if (maxCnt < c.first) {
+					maxCnt = c.first;
+					rainbowCnt = c.second;
 					standardX = i;
 					standardY = j;
+				}
+				else if (maxCnt == c.first) {
+					if (rainbowCnt <= c.second) {
+						rainbowCnt = c.second;
+						standardX = i;
+						standardY = j;
+					}
 				}
 			}
 		}
 	}
+	if (maxCnt == 0)
+		return{ -1,-1 };
 	return { standardX, standardY };
 }
 
-int erase_block(int sx, int sy) {
+void erase_block(int sx, int sy) {
 	memset(visited, false, sizeof(visited));
 	int blockColor = board[sx][sy];
 	int cnt = 1;
@@ -101,7 +125,6 @@ int erase_block(int sx, int sy) {
 	while (!qu.empty()) {
 		int x = qu.front().first;
 		int y = qu.front().second;
-		cout << x << "," << y << '\n';
 		qu.pop();
 		for (int i = 0; i < 4; i++) {
 			int nx = x + dx[i];
@@ -116,20 +139,55 @@ int erase_block(int sx, int sy) {
 			cnt++;
 		}
 	}
-	return cnt;
+	answer += cnt * cnt;
+}
+
+void board_gravity() {
+	for (int j = 0; j < N; j++) {
+		for (int i = N - 1; i >= 0; i--) {
+			if (board[i][j] == -2) {
+				int tmpI = i;
+				while (tmpI > 0 && board[tmpI][j] == -2) {
+					tmpI--;
+				}
+				if (board[tmpI][j] == -1)
+					continue;
+				board[i][j] = board[tmpI][j];
+				board[tmpI][j] = -2;
+			}
+		}
+	}
+}
+
+void rounding() {
+	vvi tmp;
+	for (int i = 0; i < N; i++) {
+		vi ttmp;
+		for (int j = 0; j < N; j++) {
+			ttmp.push_back(board[i][j]);
+		}
+		tmp.push_back(ttmp);
+	}
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			board[i][j] = tmp[j][(N - 1 - i)];
+		}
+	}
 }
 
 void solve() {
-	pii standardBlock = find_block();
-	int eraseNum = erase_block(standardBlock.first, standardBlock.second);
-	answer += eraseNum * eraseNum;
-	cout << '\n';
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
-			cout << board[i][j] << " ";
-		}
-		cout << '\n';
+	while (true) {
+		pii standardBlock = find_block();
+		if (standardBlock.first == -1 && standardBlock.second == -1)
+			break;
+		cout << standardBlock.first << "," << standardBlock.second << '\n';
+		erase_block(standardBlock.first, standardBlock.second);
+		board_gravity();
+		rounding();
+		board_gravity();
 	}
+	cout << answer << '\n';
 }
 
 int main() {
