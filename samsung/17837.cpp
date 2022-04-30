@@ -28,8 +28,8 @@ using tiii = tuple<int, int, int>;
 
 int board[MAX][MAX];
 vi info[MAX][MAX];
-vector<tuple<int,int,int,int>> coordi;
-int dx[] = { 0,0,0,-1,1};
+vector<tuple<int, int, int, int>> coordi;
+int dx[] = { 0,0,0,-1,1 };
 int dy[] = { 0,1,-1,0,0 };
 int N, K;
 bool flag = false;
@@ -87,83 +87,78 @@ int change_direction(int d) {
 	return d;
 }
 
-int find_idx(int x,int y,int num) {
+int find_idx(int x, int y, int num) {
 	for (int i = 0; i < info[x][y].size(); i++) {
 		if (info[x][y][i] == num)
 			return i;
 	}
 }
 
+bool is_go(int x, int y) {
+	if (!is_range(x, y) || board[x][y] == BLUE)
+		return false;
+	return true;
+}
+
+void next_white(int x,int y,int nx,int ny,int num) {
+	int idx = find_idx(x, y, num);
+	vi tmp;
+	for (int j = idx; j < info[x][y].size(); j++) {
+		info[nx][ny].push_back(info[x][y][j]);
+		coordi[info[x][y][j] - 1] = { info[x][y][j],get<1>(coordi[info[x][y][j] - 1]),nx,ny };
+	}
+	for (int j = 0; j < idx; j++)
+		tmp.push_back(info[x][y][j]);
+	info[x][y].clear();
+	info[x][y] = tmp;
+}
+
+void next_red(int x, int y, int nx, int ny, int num) {
+	int idx = find_idx(x, y, num);
+	vi tmp;
+	for (int j = info[x][y].size() - 1; j >= idx; j--) {
+		info[nx][ny].push_back(info[x][y][j]);
+		coordi[info[x][y][j] - 1] = { info[x][y][j],get<1>(coordi[info[x][y][j] - 1]),nx,ny };
+	}
+	for (int j = 0; j < idx; j++)
+		tmp.push_back(info[x][y][j]);
+	info[x][y].clear();
+	info[x][y] = tmp;
+}
+
 void move_chess() {
-	for (int i = 0; i < coordi.size();i++) {
+	for (int i = 0; i < coordi.size(); i++) {
 		int num = get<0>(coordi[i]);
 		int d = get<1>(coordi[i]);
 		int x = get<2>(coordi[i]);
 		int y = get<3>(coordi[i]);
 		int nx = x + dx[d]; int ny = y + dy[d];
-		if (!is_range(nx, ny) || board[nx][ny] == BLUE) {
+		if (!is_go(nx, ny)) {
 			d = change_direction(d);
 			coordi[i] = { num,d,x,y };
 			nx = x + dx[d]; ny = y + dy[d];
-			if (!is_range(nx, ny) || board[nx][ny] == BLUE)
+			if (!is_go(nx, ny))
 				continue;
 			else {
-				if (board[nx][ny] == WHITE) {
-					int idx = find_idx(x, y, num);
-					vi tmp;
-					for (int j = idx; j < info[x][y].size(); j++) {
-						info[nx][ny].push_back(info[x][y][j]);
-						coordi[info[x][y][j] - 1] = { info[x][y][j],get<1>(coordi[info[x][y][j]-1]),nx,ny };
-					}
-					for (int j = 0; j < idx; j++)
-						tmp.push_back(info[x][y][j]);
-					info[x][y].clear();
-					info[x][y] = tmp;
-				}
-				else if(board[nx][ny]==RED) {
-					int idx = find_idx(x, y, num);
-					vi tmp;
-					for (int j = info[x][y].size() - 1; j >= idx; j--) {
-						info[nx][ny].push_back(info[x][y][j]);
-						coordi[info[x][y][j] - 1] = { info[x][y][j],get<1>(coordi[info[x][y][j]-1]),nx,ny };
-					}
-					for (int j = 0; j < idx; j++)
-						tmp.push_back(info[x][y][j]);
-					info[x][y].clear();
-					info[x][y] = tmp;
-				}
+				if (board[nx][ny] == WHITE)
+					next_white(x, y, nx, ny, num);
+				else if (board[nx][ny] == RED)
+					next_red(x, y, nx, ny, num);
 			}
-			continue;
-		}
-		
-		if (board[nx][ny] == WHITE) {
-			int idx = find_idx(x, y, num);
-			vi tmp;
-			for (int j=idx; j < info[x][y].size(); j++) {
-				info[nx][ny].push_back(info[x][y][j]);
-				coordi[info[x][y][j]-1] = { info[x][y][j],get<1>(coordi[info[x][y][j]-1]),nx,ny};
+			if (is_answer()) {
+				flag = true;
+				return;
 			}
-			for (int j = 0; j < idx; j++)
-				tmp.push_back(info[x][y][j]);
-			info[x][y].clear();
-			info[x][y] = tmp;
 		}
-		else if(board[nx][ny] == RED) {
-			int idx = find_idx(x, y, num);
-			vi tmp;
-			for (int j =info[x][y].size()-1; j >= idx; j--) {
-				info[nx][ny].push_back(info[x][y][j]);
-				coordi[info[x][y][j]-1] = { info[x][y][j],get<1>(coordi[info[x][y][j]-1]),nx,ny };
-
+		else {
+			if (board[nx][ny] == WHITE)
+				next_white(x,y,nx,ny,num);
+			else if(board[nx][ny]==RED)
+				next_red(x,y,nx,ny,num);
+			if (is_answer()) {
+				flag = true;
+				return;
 			}
-			for (int j = 0; j < idx; j++)
-				tmp.push_back(info[x][y][j]);
-			info[x][y].clear();
-			info[x][y] = tmp;
-		}
-		if (is_answer()) {
-			flag = true;
-			return;
 		}
 	}
 }
