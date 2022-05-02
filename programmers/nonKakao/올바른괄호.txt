@@ -1,0 +1,24 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+bool solution(string s)
+{
+    bool answer = true;
+    stack<char> st;
+    for(const char &g : s){
+        if(st.empty()){
+            if(g==')'){
+                answer=false;
+                break;
+            }
+        }
+        if(g=='(')
+            st.push(g);
+        else
+            st.pop();
+    }
+    if(!st.empty())
+        answer=false;
+    return answer;
+}
