@@ -1,1 +1,1 @@
-# Boj-solve
+# Algorithm-solving
