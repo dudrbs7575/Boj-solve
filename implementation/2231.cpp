@@ -20,24 +20,26 @@ void init() {
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL);
 	cin >> N;
-	for (int i = 1; i <= N; i++)
-		qu.push(i);
+}
+
+bool is_valid(int k) {
+	int sum = k;
+	while (k) {
+		sum += k % 10;
+		k /= 10;
+	}
+	if (sum == N)
+		return true;
+	return false;
 }
 
 void solve() {
-	if (N == 1) {
-		cout << qu.front() << '\n';
-		return;
-	}
-	int answer;
-	while (true) {
-		qu.pop();
-		if (qu.size()==1) {
-			cout << qu.front() << '\n';
-			return;
+	int answer = 0;
+	for (int i = 1; i <= N; i++) {
+		if (is_valid(i)) {
+			answer = i;
+			break;
 		}
-		qu.push(qu.front());
-		qu.pop();
 	}
 	cout << answer << '\n';
 }
