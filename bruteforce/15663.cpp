@@ -31,19 +31,29 @@ void init() {
 
 void dfs(int cnt, string s) {
 	if (cnt == M) {
+		string chkDuple = "";
+		for (int i = 0; i < s.length(); i++) {
+			chkDuple += to_string(v[s[i] - '0']);
+			chkDuple += " ";
+		}
+		if (se.find(chkDuple) == se.end()) {
+			cout << chkDuple << '\n';
+			se.insert(chkDuple);
+		}
+		/*
 		if (se.find(s) == se.end()) {
 			for (int i = 0; i < s.length(); i++) {
-				cout << s[i] << " ";
+				cout << v[s[i]-'0'] << " ";
 			}
 			cout << '\n';
 			se.insert(s);
-		}
+		}*/
 	}
 	for (int i = 0; i < N; i++) {
 		if (chk[i])
 			continue;
 		chk[i] = true;
-		dfs(cnt + 1, s + to_string(v[i]));
+		dfs(cnt + 1, s + to_string(i));
 		chk[i] = false;
 	}
 }
