@@ -1,0 +1,51 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int totalNode;
+
+void make_graph(int k,vector<vector<int>> &wires,vector<vector<int>> &graph){
+    for(int i=0;i<wires.size();i++){
+        if(i==k)
+            continue;
+        int s=wires[i][0];
+        int e=wires[i][1];
+        graph[s].push_back(e);
+        graph[e].push_back(s);
+    }
+}
+
+void dfs(int cur,vector<vector<int>> &graph ,vector<bool> &chk){
+    chk[cur]=true;
+    for(int i=0;i<graph[cur].size();i++){
+        int next=graph[cur][i];
+        if(chk[next])
+            continue;
+        totalNode++;
+        dfs(next,graph,chk);
+    }
+}
+
+int get_ans(int n, int s1, int s2, vector<vector<int>> &graph){
+    vector<bool> chk;
+    totalNode=1;
+    chk.resize(n+1,false);
+    dfs(s1,graph,chk);
+    int tmp1=totalNode;
+    totalNode=1;
+    chk.resize(n+1,false);
+    dfs(s2,graph,chk);
+    int tmp2=totalNode;
+    return abs(tmp1-tmp2);
+}
+
+int solution(int n, vector<vector<int>> wires) {
+    int answer = 0x3f3f3f3f;
+    for(int i=0;i<wires.size();i++){
+        vector<vector<int>> graph;
+        graph.resize(n+1);
+        make_graph(i,wires,graph);
+        answer=min(answer,get_ans(n,wires[i][0],wires[i][1],graph));
+    }
+    return answer;
+}
