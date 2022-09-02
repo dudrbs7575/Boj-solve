@@ -1,0 +1,34 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int len;
+int dp[100001][4];
+
+int go(int row, int col,vector<vector<int>> &land){
+    if(row>=len||col<0||col>3)
+        return 0;
+    
+    int &ret=dp[row][col];
+    if(ret!=-1)
+        return ret;
+    
+    int cur=land[row][col];
+    ret=0;
+    for(int i=0;i<4;i++){
+        if(i==col)
+            continue;
+        ret=max(ret,go(row+1,i,land)+cur);
+    }
+    return ret;
+}
+
+int solution(vector<vector<int> > land)
+{
+    int answer=0;
+    len=land.size();
+    memset(dp,-1,sizeof(dp));
+    for(int i=0;i<4;i++)
+        answer=max(go(0,i,land),answer);
+    return answer;
+}
